@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+
+:root {
+  --primary: #f2ca1c;
+  --secondary: #31468e;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+body{
+  overflow-x: hidden;
+   font-family: "Montserrat";
+
+}
+
+.responsive-container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+@media (min-width: 768px) {
+  .responsive-container {
+    padding-left: 1.5rem; /* 24px */
+    padding-right: 1.5rem;
+  }
+}
+/* animation-timeline: view();
+animation-range: entry 5% cover 20%; */
