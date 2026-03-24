@@ -9,26 +9,28 @@ exports.loginAdmin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Validate email & password
+    // 1️⃣ Validate input
     if (!email || !password) {
-      return next(new ErrorResponse('Please provide an email and password', 400));
+      return next(new ErrorResponse('Please provide email and password', 400));
     }
 
-    // Check for admin
+    // 2️⃣ Find admin (include password explicitly)
     const admin = await Admin.findOne({ email }).select('+password');
 
     if (!admin) {
       return next(new ErrorResponse('Invalid credentials', 401));
     }
 
-    // Check if password matches
+    // 3️⃣ Compare password
     const isMatch = await admin.matchPassword(password);
 
     if (!isMatch) {
       return next(new ErrorResponse('Invalid credentials', 401));
     }
 
+    // 4️⃣ Send token
     sendTokenResponse(admin, 200, res);
+
   } catch (error) {
     next(error);
   }

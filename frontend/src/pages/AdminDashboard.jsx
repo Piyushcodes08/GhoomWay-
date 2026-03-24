@@ -100,10 +100,23 @@ export default function AdminDashboard() {
 
   if (loading && bookings.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-[#31468e] border-t-transparent rounded-full animate-spin" />
-          <p className="font-black text-[#31468e] uppercase tracking-widest text-sm">Initialising Dashboard...</p>
+      <div className="min-h-screen bg-slate-50 p-4 md:p-8 pt-24 md:pt-28">
+        <div className="max-w-7xl mx-auto space-y-8 animate-pulse">
+          <div className="flex flex-col md:flex-row justify-between gap-6">
+            <div className="space-y-3">
+              <div className="h-4 w-32 bg-slate-200 rounded-full" />
+              <div className="h-10 w-64 bg-slate-200 rounded-2xl" />
+              <div className="h-4 w-48 bg-slate-200 rounded-full" />
+            </div>
+            <div className="flex gap-3">
+              <div className="h-12 w-32 bg-slate-200 rounded-2xl" />
+              <div className="h-12 w-32 bg-slate-200 rounded-2xl" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => <div key={i} className="h-28 bg-slate-200 rounded-[2rem]" />)}
+          </div>
+          <div className="h-[500px] bg-white rounded-[2.5rem] border border-slate-200" />
         </div>
       </div>
     );
@@ -215,10 +228,10 @@ export default function AdminDashboard() {
               <thead>
                 <tr className="bg-slate-50/50 border-b border-slate-100">
                   <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Booking ID</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer Details</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type & Location</th>
+                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
+                  <th className="hidden lg:table-cell px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type & Location</th>
                   <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Schedule</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                  <th className="hidden sm:table-cell px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
                   <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                 </tr>
               </thead>
@@ -244,7 +257,7 @@ export default function AdminDashboard() {
                           <p className="text-xs font-bold text-slate-400">{b.phoneNumber}</p>
                         </div>
                       </td>
-                      <td className="px-8 py-6">
+                      <td className="hidden lg:table-cell px-8 py-6">
                         <div className="space-y-1">
                           <p className="font-bold text-slate-700 text-sm flex items-center gap-1.5">
                             <MapPin size={14} className="text-emerald-500" /> {b.pickupCity}
@@ -262,7 +275,7 @@ export default function AdminDashboard() {
                           <p className="text-xs font-bold text-slate-400">{new Date(b.pickupDate).toLocaleDateString()}</p>
                         </div>
                       </td>
-                      <td className="px-8 py-6">
+                      <td className="hidden sm:table-cell px-8 py-6">
                         <StatusBadge status={b.status} />
                       </td>
                       <td className="px-8 py-6">

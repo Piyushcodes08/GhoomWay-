@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const dns = require('dns');
 const Admin = require('./src/models/Admin');
+
+// Fix for Atlas SRV resolution
+dns.setDefaultResultOrder('ipv4first');
+dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 dotenv.config();
 
@@ -19,13 +24,13 @@ const seedAdmin = async () => {
     const admin = await Admin.create({
       name: 'System Admin',
       email: 'admin@ghoomway.com',
-      password: 'adminpassword123',
-      role: 'super-admin',
+      password: 'Admin@123',
+      role: 'admin',
     });
 
     console.log('Admin seeded successfully:');
     console.log('Email: admin@ghoomway.com');
-    console.log('Password: adminpassword123');
+    console.log('Password: Admin@123');
 
     process.exit();
   } catch (error) {

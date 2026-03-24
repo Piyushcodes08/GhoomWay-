@@ -25,7 +25,7 @@ const adminSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please add a password'],
       minlength: 6,
-      select: false,
+      select: false, // 🔒 hidden by default
     },
   },
   {
@@ -33,17 +33,18 @@ const adminSchema = new mongoose.Schema(
   }
 );
 
-// Encrypt password using bcrypt
-adminSchema.pre('save', async function (next) {
+// 🔐 HASH PASSWORD (FIXED - NO NEXT IN ASYNC HOOK)
+adminSchema.pre('save', async function () {
+  // ❗ IMPORTANT: stop if password not modified
   if (!this.isModified('password')) {
-    next();
+    return;
   }
 
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
+  // hash password
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
-// Match user entered password to hashed password in database
+// 🔑 MATCH PASSWORD
 adminSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
