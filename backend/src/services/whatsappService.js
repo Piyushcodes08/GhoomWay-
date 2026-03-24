@@ -1,93 +1,143 @@
 const twilio = require('twilio');
 
 /**
- * @desc    Send WhatsApp notification via Twilio with robust logging
- * @param   {string} type - Notification type (NEW_BOOKING_ADMIN or BOOKING_ACCEPTED_USER)
- * @param   {object} bookingData - The booking document/data
+ * @desc Builds message body and recipient for a given notification type.
+ *       Returns null if type is unrecognized.
+ */
+const buildNotification = (type, booking, adminNumber) => {
+  const pickupDateStr = new Date(booking.pickupDate).toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  switch (type) {
+    case 'NEW_BOOKING_ADMIN':
+      return {
+        to: adminNumber,
+        body:
+          `🚀 *New Ride Request: ${booking.bookingId}*\n\n` +
+          `👤 *Customer:* ${booking.customerName}\n` +
+          `📞 *Phone:* ${booking.phoneNumber}\n\n` +
+          `🚖 *Trip Details:*\n` +
+          `  Type: ${booking.tripCategory} (${booking.tripType})\n` +
+          `  Pickup: ${booking.pickupCity}\n` +
+          (booking.dropCity ? `  Drop: ${booking.dropCity}\n` : '') +
+          (booking.rentalPackage ? `  Package: ${booking.rentalPackage}\n` : '') +
+          `  Date: ${pickupDateStr} @ ${booking.pickupTime}\n` +
+          `  Cab: ${booking.cabCategory} | Pax: ${booking.passengers}\n\n` +
+          `🚦 *Status:* Pending Review\n` +
+          `Open Admin Dashboard to Accept or Reject.\n\n` +
+          `⏰ *Received:* ${new Date().toLocaleString('en-IN')}`,
+      };
+
+    case 'BOOKING_ACCEPTED_USER':
+      return {
+        to: `whatsapp:+91${booking.phoneNumber}`,
+        body:
+          `✅ *Booking Confirmed – GhoomWay*\n\n` +
+          `Hi ${booking.customerName},\n\n` +
+          `Great news! Your booking *${booking.bookingId}* has been *confirmed*.\n\n` +
+          `🚖 *Trip Details:*\n` +
+          `  Pickup: ${booking.pickupCity}\n` +
+          (booking.dropCity ? `  Drop: ${booking.dropCity}\n` : '') +
+          `  Date: ${pickupDateStr} @ ${booking.pickupTime}\n` +
+          `  Cab: ${booking.cabCategory}\n\n` +
+          (booking.adminRemark ? `📌 *Note:* ${booking.adminRemark}\n\n` : '') +
+          `Driver details will be shared shortly. Stay tuned!\n\n` +
+          `Thank you for choosing *GhoomWay* 🙏`,
+      };
+
+    case 'BOOKING_REJECTED_USER':
+      return {
+        to: `whatsapp:+91${booking.phoneNumber}`,
+        body:
+          `❌ *Booking Update – GhoomWay*\n\n` +
+          `Hi ${booking.customerName},\n\n` +
+          `We regret to inform you that your booking *${booking.bookingId}* could not be confirmed at this time.\n\n` +
+          (booking.adminRemark ? `📌 *Reason:* ${booking.adminRemark}\n\n` : '') +
+          `We apologize for the inconvenience. Please try booking again or contact us for assistance.\n\n` +
+          `Thank you for your understanding 🙏\n*– Team GhoomWay*`,
+      };
+
+    case 'BOOKING_COMPLETED_USER':
+      return {
+        to: `whatsapp:+91${booking.phoneNumber}`,
+        body:
+          `🏁 *Trip Completed – GhoomWay*\n\n` +
+          `Hi ${booking.customerName},\n\n` +
+          `We hope you had a pleasant journey! Your booking *${booking.bookingId}* is now marked as *completed*.\n\n` +
+          `🙏 *Thank you for riding with us!*\n\n` +
+          `We'd love to hear your feedback. See you on your next trip! 🚗💨`,
+      };
+
+    case 'BOOKING_CANCELLED_USER':
+      return {
+        to: `whatsapp:+91${booking.phoneNumber}`,
+        body:
+          `🚫 *Booking Cancelled – GhoomWay*\n\n` +
+          `Hi ${booking.customerName},\n\n` +
+          `Your booking *${booking.bookingId}* has been *cancelled*.\n\n` +
+          (booking.adminRemark ? `📌 *Note:* ${booking.adminRemark}\n\n` : '') +
+          `If this was a mistake, please book again or contact support.\n\n` +
+          `We hope to serve you again soon! 🙏`,
+      };
+
+    default:
+      return null;
+  }
+};
+
+/**
+ * @desc    Send a WhatsApp notification via Twilio.
+ * @param   {string} type        - Notification type key (e.g. 'NEW_BOOKING_ADMIN')
+ * @param   {object} bookingData - The booking document or plain object
+ * @returns {boolean}            - true on success, false on failure (never throws)
  */
 const sendWhatsAppNotification = async (type, bookingData) => {
-  console.log(`\n[DEBUG] --- WhatsApp Notification Attempt: ${type} ---`);
-  console.log(`[DEBUG] Booking ID: ${bookingData.bookingId}`);
-  
-  try {
-    const adminNumber = process.env.ADMIN_WHATSAPP_NUMBER;
-    const twilioNumber = process.env.TWILIO_WHATSAPP_NUMBER;
-    const accountSid = process.env.TWILIO_ACCOUNT_SID;
-    const authToken = process.env.TWILIO_AUTH_TOKEN;
+  console.log(`\n[WhatsApp] Initiating notification: ${type} | Booking: ${bookingData.bookingId}`);
 
-    // Verify Credentials
-    if (!accountSid || !authToken || !twilioNumber || !adminNumber) {
-      console.error('[ERROR] ❌ Twilio configuration missing in .env');
-      console.log(`[DEBUG] SID: ${accountSid ? 'OK' : 'MISSING'}`);
-      console.log(`[DEBUG] Token: ${authToken ? 'OK' : 'MISSING'}`);
-      console.log(`[DEBUG] From: ${twilioNumber || 'MISSING'}`);
-      console.log(`[DEBUG] Admin: ${adminNumber || 'MISSING'}`);
+  try {
+    const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER, ADMIN_WHATSAPP_NUMBER } =
+      process.env;
+
+    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_WHATSAPP_NUMBER || !ADMIN_WHATSAPP_NUMBER) {
+      console.error('[WhatsApp] ❌ Missing Twilio credentials. Check .env file.');
       return false;
     }
 
-    const client = twilio(accountSid, authToken);
-    let messageBody = '';
+    const notification = buildNotification(type, bookingData, ADMIN_WHATSAPP_NUMBER);
 
-    // Format Message Body
-    if (type === 'NEW_BOOKING_ADMIN') {
-      messageBody = `🚀 *New Ride Request: ${bookingData.bookingId}*\n\n` +
-        `👤 *Customer:* ${bookingData.customerName}\n` +
-        `📞 *Phone:* ${bookingData.phoneNumber}\n\n` +
-        `🚖 *Trip Details:*\n` +
-        `Type: ${bookingData.tripCategory} (${bookingData.tripType})\n` +
-        `Pickup: ${bookingData.pickupCity}\n` +
-        (bookingData.dropCity ? `Drop: ${bookingData.dropCity}\n` : '') +
-        (bookingData.rentalPackage ? `Package: ${bookingData.rentalPackage}\n` : '') +
-        `Date: ${new Date(bookingData.pickupDate).toLocaleDateString()} @ ${bookingData.pickupTime}\n` +
-        `Cab: ${bookingData.cabCategory}\n` +
-        `Pax: ${bookingData.passengers}\n\n` +
-        `🚦 *Status:* Pending Review\n` +
-        `Check Admin Dashboard to Accept/Reject.\n\n` +
-        `⏰ *Timestamp:* ${new Date().toLocaleString()}`;
-    } else if (type === 'BOOKING_ACCEPTED_USER') {
-      messageBody = `✅ *Booking Confirmed!*\n\n` +
-        `Hi ${bookingData.customerName},\n` +
-        `Your ride (${bookingData.bookingId}) has been ACCEPTED by GhoomWay.\n` +
-        `Driver details will be shared shortly.\n` +
-        `Pickup: ${bookingData.pickupCity}\n` +
-        `Date/Time: ${new Date(bookingData.pickupDate).toLocaleDateString()} @ ${bookingData.pickupTime}\n\n` +
-        `Thank you for choosing GhoomWay!`;
+    if (!notification) {
+      console.warn(`[WhatsApp] ⚠️ Unknown notification type: "${type}". Skipping.`);
+      return false;
     }
 
-    // Determine Recipient
-    const recipient = type === 'NEW_BOOKING_ADMIN' ? adminNumber : `whatsapp:+91${bookingData.phoneNumber}`;
-    
-    console.log(`[DEBUG] Sending from: ${twilioNumber}`);
-    console.log(`[DEBUG] Sending to: ${recipient}`);
-    console.log(`[DEBUG] Message Body: \n${messageBody.split('\n').map(l => '> ' + l).join('\n')}`);
+    const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
-    // Execute Send
     const response = await client.messages.create({
-      body: messageBody,
-      from: twilioNumber,
-      to: recipient
+      body: notification.body,
+      from: TWILIO_WHATSAPP_NUMBER,
+      to: notification.to,
     });
 
-    console.log(`[INFO] ✅ WhatsApp transmitted successfully! SID: ${response.sid}`);
-    console.log(`[DEBUG] Twilio Status: ${response.status}`);
+    console.log(`[WhatsApp] ✅ Sent successfully. SID: ${response.sid} | Status: ${response.status}`);
     return true;
   } catch (error) {
-    console.error(`[ERROR] ❌ WhatsApp Service Failure: ${error.message}`);
-    console.error(`[DEBUG] Error Code: ${error.code}`);
-    console.error(`[DEBUG] Error Stack: ${error.stack}`);
-    
-    if (error.code === 63007) {
-      console.log('💡 [TIP] The "From" number in .env must be a valid WhatsApp sender (e.g., standard sandbox or verified number).');
-    } else if (error.code === 63015) {
-      console.log('💡 [TIP] Freeform messages are blocked for this user. Ensure they have sent "join <keyword>" to the sandbox.');
-    } else if (error.code === 21608) {
-      console.log('💡 [TIP] Recipient number is not verified in Twilio or has not joined the sandbox.');
+    console.error(`[WhatsApp] ❌ Failed to send "${type}": ${error.message}`);
+
+    // Developer hints for common Twilio error codes
+    const hints = {
+      63007: 'The "From" number is not a valid WhatsApp sender.',
+      63015: 'Recipient has not joined the sandbox. They must send "join <keyword>" first.',
+      21608: 'Recipient number is not verified or has not opted in.',
+    };
+    if (hints[error.code]) {
+      console.warn(`[WhatsApp] 💡 Tip: ${hints[error.code]}`);
     }
-    
+
     return false;
   }
 };
 
-module.exports = {
-  sendWhatsAppNotification
-};
+module.exports = { sendWhatsAppNotification };

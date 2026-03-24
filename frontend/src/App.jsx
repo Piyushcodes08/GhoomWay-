@@ -10,6 +10,8 @@ const ServicesPage = lazy(() => import("./pages/inner/ServicesPage"));
 const DestinationsPage = lazy(() => import("./pages/inner/DestinationsPage"));
 const ContactPage = lazy(() => import("./pages/inner/ContactPage"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const ProtectedRoute = lazy(() => import("./components/layout/ProtectedRoute"));
 
 const App = () => {
   return (
@@ -22,7 +24,12 @@ const App = () => {
           <Route path="services" element={<ServicesPage />} />
           <Route path="destinations" element={<DestinationsPage />} />
           <Route path="contact" element={<ContactPage />} />
-          <Route path="admin" element={<AdminDashboard />} />
+        </Route>
+
+        <Route path="/admin/login" element={<LoginPage />} />
+        
+        <Route element={<ProtectedRoute />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </>

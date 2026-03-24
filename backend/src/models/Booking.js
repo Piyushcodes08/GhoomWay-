@@ -1,68 +1,92 @@
 const mongoose = require('mongoose');
 
-const bookingSchema = new mongoose.Schema({
-  bookingId: { 
-    type: String, 
-    unique: true,
-    index: true
+const bookingSchema = new mongoose.Schema(
+  {
+    bookingId: {
+      type: String,
+      unique: true,
+      index: true,
+    },
+    customerName: {
+      type: String,
+      required: [true, 'Please add a customer name'],
+      trim: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: [true, 'Please add a phone number'],
+      index: true,
+      match: [/^\d{10}$/, 'Please add a valid 10-digit phone number'],
+    },
+    tripCategory: {
+      type: String,
+      required: [true, 'Please add a trip category'],
+      trim: true,
+    },
+    tripType: {
+      type: String,
+      required: [true, 'Please add a trip type'],
+      trim: true,
+    },
+    pickupCity: {
+      type: String,
+      required: [true, 'Please add a pickup city'],
+      trim: true,
+    },
+    dropCity: {
+      type: String,
+      trim: true,
+    },
+    rentalPackage: {
+      type: String,
+      trim: true,
+    },
+    pickupDate: {
+      type: Date,
+      required: [true, 'Please add a pickup date'],
+    },
+    returnDate: {
+      type: Date,
+    },
+    pickupTime: {
+      type: String,
+      required: [true, 'Please add a pickup time'],
+    },
+    cabCategory: {
+      type: String,
+      required: [true, 'Please add a cab category'],
+      trim: true,
+    },
+    passengers: {
+      type: String,
+      required: [true, 'Please add number of passengers'],
+    },
+    status: {
+      type: String,
+      enum: {
+        values: ['Pending', 'Accepted', 'Rejected', 'Completed', 'Cancelled'],
+        message: '{VALUE} is not a valid booking status',
+      },
+      default: 'Pending',
+      index: true,
+    },
+    adminRemark: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
-  tripCategory: { 
-    type: String, 
-    required: [true, 'Please add a trip category'] 
-  },
-  tripType: { 
-    type: String, 
-    required: [true, 'Please add a trip type'] 
-  },
-  pickupCity: { 
-    type: String, 
-    required: [true, 'Please add a pickup city'] 
-  },
-  dropCity: { type: String },
-  rentalPackage: { type: String },
-  pickupDate: { 
-    type: Date, 
-    required: [true, 'Please add a pickup date'] 
-  },
-  returnDate: { type: Date },
-  pickupTime: { 
-    type: String, 
-    required: [true, 'Please add a pickup time'] 
-  },
-  cabCategory: { 
-    type: String, 
-    required: [true, 'Please add a cab category'] 
-  },
-  passengers: { 
-    type: String, 
-    required: [true, 'Please add number of passengers'] 
-  },
-  customerName: { 
-    type: String, 
-    required: [true, 'Please add customer name'] 
-  },
-  phoneNumber: { 
-    type: String, 
-    required: [true, 'Please add a phone number'],
-    index: true,
-    match: [/^\d{10}$/, 'Please add a 10-digit phone number']
-  },
-  status: { 
-    type: String, 
-    enum: ['Pending', 'In-Review', 'Accepted', 'Rejected', 'Completed'], 
-    default: 'Pending' 
+  {
+    timestamps: true,
   }
-}, { timestamps: true });
+);
 
-// Auto-generate booking ID
-bookingSchema.pre('save', async function() {
+// Auto-generate a human-readable booking ID before first save
+bookingSchema.pre('save', async function () {
   if (!this.bookingId) {
-    const prefix = 'GW';
     const randomNum = Math.floor(10000 + Math.random() * 90000);
-    this.bookingId = `${prefix}-${randomNum}`;
+    this.bookingId = `GW-${randomNum}`;
   }
 });
 
-
 module.exports = mongoose.model('Booking', bookingSchema);
-
