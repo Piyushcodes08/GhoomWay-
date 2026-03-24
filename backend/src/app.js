@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-// const mongoSanitize = require('express-mongo-sanitize');
+const mongoSanitize = require('./middlewares/sanitizeMiddleware'); // Custom Express 5-compatible sanitizer
+const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 const bookingRoutes = require('./routes/bookingRoutes');
@@ -10,36 +11,31 @@ const errorHandler = require('./middlewares/errorMiddleware');
 
 const app = express();
 
-// 1. Security Headers
-app.use(helmet());
+// 1. GLOBAL CORS (Must be at top for preflight)
+app.use(cors());
 
-// 2. Request Logging
+// 2. Security Headers & Performance
+app.use(helmet());
+app.use(compression());
+
+// 3. Request Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 } else {
   app.use(morgan('combined'));
 }
 
-// 3. Rate Limiting (Prevents Brute Force)
+// 4. Rate Limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: 'Too many requests from this IP, please try again after 15 minutes',
 });
 app.use('/api/v1/', limiter);
 
-// 4. Body Parser & Sanitization
-app.use(express.json({ limit: '10kb' })); // Limit body size
-// app.use(mongoSanitize()); // Data sanitization against NoSQL query injection
-
-// 5. CORS
-app.use(cors(
-  {
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-
-  }
-));
+// 5. Body Parser & Sanitization
+app.use(express.json({ limit: '10kb' }));
+app.use(mongoSanitize); // Custom sanitizer — strips $-prefixed keys from req.body
 
 // Routes
 app.use('/api/v1/bookings', bookingRoutes);
@@ -54,7 +50,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Centralized error handler — must be last middleware
+// Error handling
 app.use(errorHandler);
 
 module.exports = app;

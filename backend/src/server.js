@@ -6,6 +6,16 @@ const app = require('./app');
 // Load env vars - path relative to project root where .env lives
 dotenv.config({ path: require('path').resolve(__dirname, '../.env') });
 
+// Validate required env vars
+const requiredEnv = ['MONGO_URI', 'JWT_SECRET', 'JWT_EXPIRE'];
+requiredEnv.forEach(env => {
+  if (!process.env[env]) {
+    console.warn(`⚠️ Warning: Environment variable ${env} is missing.`);
+    // In production, we should exit(1)
+    if (process.env.NODE_ENV === 'production') process.exit(1);
+  }
+});
+
 
 // Force IPv4 first for MongoDB SRV resolution
 dns.setDefaultResultOrder('ipv4first');
