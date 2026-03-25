@@ -35,18 +35,20 @@ exports.createBooking = async (req, res, next) => {
       console.log(`[Booking] ✅ Saved to DB: ${booking.bookingId} (${booking._id})`);
     }
 
-    // Fire-and-forget admin WhatsApp notification
+    // Fire-and-forget WhatsApp notifications (Admin & User)
     sendWhatsAppNotification('NEW_BOOKING_ADMIN', booking)
       .then((sent) => {
-        if (sent) {
-          console.log(`[Booking] WhatsApp admin notification sent for ${booking.bookingId}`);
-        } else {
-          console.warn(`[Booking] WhatsApp admin notification failed for ${booking.bookingId}`);
-        }
+        if (sent) console.log(`[Booking] WhatsApp admin notification sent for ${booking.bookingId}`);
+        else console.warn(`[Booking] WhatsApp admin notification failed for ${booking.bookingId}`);
       })
-      .catch((err) => {
-        console.error(`[Booking] Unexpected WhatsApp error: ${err.message}`);
-      });
+      .catch((err) => console.error(`[Booking] Admin WhatsApp error: ${err.message}`));
+
+    sendWhatsAppNotification('NEW_BOOKING_USER', booking)
+      .then((sent) => {
+        if (sent) console.log(`[Booking] WhatsApp user notification sent for ${booking.bookingId}`);
+        else console.warn(`[Booking] WhatsApp user notification failed for ${booking.bookingId}`);
+      })
+      .catch((err) => console.error(`[Booking] User WhatsApp error: ${err.message}`));
 
     return res.status(201).json({
       success: true,

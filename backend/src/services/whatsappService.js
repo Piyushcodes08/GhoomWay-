@@ -1,4 +1,15 @@
 const twilio = require('twilio');
+const fs = require('fs');
+const path = require('path');
+
+const logToFile = (msg) => {
+  const logMsg = `[${new Date().toISOString()}] ${msg}\n`;
+  try {
+    fs.appendFileSync(path.join(process.cwd(), 'whatsapp_debug.log'), logMsg);
+  } catch (err) {
+    // ignore
+  }
+};
 
 /**
  * @desc Builds message body and recipient for a given notification type.
@@ -29,6 +40,20 @@ const buildNotification = (type, booking, adminNumber) => {
           `🚦 *Status:* Pending Review\n` +
           `Open Admin Dashboard to Accept or Reject.\n\n` +
           `⏰ *Received:* ${new Date().toLocaleString('en-IN')}`,
+      };
+
+    case 'NEW_BOOKING_USER':
+      return {
+        to: `whatsapp:+91${booking.phoneNumber}`,
+        body:
+          `🚖 *Booking Received – GhoomWay*\n\n` +
+          `Hi ${booking.customerName},\n\n` +
+          `Thank you for choosing GhoomWay! We've received your booking request *${booking.bookingId}*.\n\n` +
+          `📍 *Trip:* ${booking.pickupCity} ${booking.dropCity ? `to ${booking.dropCity}` : ''}\n` +
+          `📅 *Date:* ${pickupDateStr} @ ${booking.pickupTime}\n\n` +
+          `⏳ *What's Next?*\n` +
+          `Please wait 5-10 minutes. Our team is reviewing your request. You will receive the final trip details and fare options here shortly.\n\n` +
+          `Thank you for your patience! 🙏`,
       };
 
     case 'BOOKING_ACCEPTED_USER':
@@ -95,14 +120,22 @@ const buildNotification = (type, booking, adminNumber) => {
  * @returns {boolean}            - true on success, false on failure (never throws)
  */
 const sendWhatsAppNotification = async (type, bookingData) => {
-  console.log(`\n[WhatsApp] Initiating notification: ${type} | Booking: ${bookingData.bookingId}`);
+  const startMsg = `Initiating notification: ${type} | Booking: ${bookingData.bookingId} | Recipient: ${bookingData.phoneNumber}`;
+  console.log(`\n[WhatsApp] ${startMsg}`);
+  logToFile(startMsg);
 
   try {
     const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER, ADMIN_WHATSAPP_NUMBER } =
       process.env;
 
-    if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_WHATSAPP_NUMBER || !ADMIN_WHATSAPP_NUMBER) {
-      console.error('[WhatsApp] ❌ Missing Twilio credentials. Check .env file.');
+    const missing = [];
+    if (!TWILIO_ACCOUNT_SID) missing.push('TWILIO_ACCOUNT_SID');
+    if (!TWILIO_AUTH_TOKEN) missing.push('TWILIO_AUTH_TOKEN');
+    if (!TWILIO_WHATSAPP_NUMBER) missing.push('TWILIO_WHATSAPP_NUMBER');
+    if (!ADMIN_WHATSAPP_NUMBER) missing.push('ADMIN_WHATSAPP_NUMBER');
+
+    if (missing.length > 0) {
+      console.error(`[WhatsApp] ❌ Missing Twilio credentials: ${missing.join(', ')}`);
       return false;
     }
 
@@ -113,6 +146,8 @@ const sendWhatsAppNotification = async (type, bookingData) => {
       return false;
     }
 
+    console.log(`[WhatsApp] Sending to: ${notification.to}`);
+
     const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
     const response = await client.messages.create({
@@ -121,13 +156,18 @@ const sendWhatsAppNotification = async (type, bookingData) => {
       to: notification.to,
     });
 
-    console.log(`[WhatsApp] ✅ Sent successfully. SID: ${response.sid} | Status: ${response.status}`);
+    const successMsg = `✅ Sent successfully. SID: ${response.sid} | Status: ${response.status}`;
+    console.log(`[WhatsApp] ${successMsg}`);
+    logToFile(successMsg);
     return true;
   } catch (error) {
-    console.error(`[WhatsApp] ❌ Failed to send "${type}": ${error.message}`);
-
+    const errorMsg = `❌ Failed to send "${type}": ${error.message}${error.code ? ` (Code: ${error.code})` : ''}`;
+    console.error(`[WhatsApp] ${errorMsg}`);
+    logToFile(errorMsg);
+    
     // Developer hints for common Twilio error codes
     const hints = {
+      20003: 'Authenticate: Twilio Auth Token is incorrect.',
       63007: 'The "From" number is not a valid WhatsApp sender.',
       63015: 'Recipient has not joined the sandbox. They must send "join <keyword>" first.',
       21608: 'Recipient number is not verified or has not opted in.',
