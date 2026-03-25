@@ -1,20 +1,13 @@
-const API_URL = import.meta.env.VITE_API_URL;
+import API from './api';
 
+/**
+ * @desc    Login as admin
+ * @route   POST /api/v1/admin/login
+ */
 export const login = async (email, password) => {
   try {
-    const response = await fetch(`${API_URL}/api/v1/admin/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Login failed');
-    }
+    const response = await API.post('/api/v1/admin/login', { email, password });
+    const data = response.data;
 
     if (data.token) {
       localStorage.setItem('adminToken', data.token);
@@ -23,11 +16,14 @@ export const login = async (email, password) => {
 
     return data;
   } catch (error) {
-    console.error('Login Error:', error.message);
-    throw error;
+    console.error('Login Error:', error.userMessage || error.message);
+    throw new Error(error.userMessage || 'Login failed. Please check your credentials.');
   }
 };
 
+/**
+ * @desc    Log out and clear local storage
+ */
 export const logout = () => {
   localStorage.removeItem('adminToken');
   localStorage.removeItem('adminUser');
@@ -35,6 +31,7 @@ export const logout = () => {
 };
 
 export const getStoredToken = () => localStorage.getItem('adminToken');
+
 export const getStoredUser = () => {
   const user = localStorage.getItem('adminUser');
   return user ? JSON.parse(user) : null;

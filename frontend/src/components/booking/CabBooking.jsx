@@ -89,10 +89,23 @@ export default function CabBooking() {
       
       if (data.success) {
         setShowSuccess(true);
+        // Reset form on success
+        setFormData({
+          pickupCity: "",
+          dropCity: "",
+          rentalPackage: "8 Hrs | 80 Kms",
+          pickupDate: "",
+          returnDate: "",
+          pickupTime: "",
+          cabCategory: "Sedan (Dzire/Etios) - 4 Seater",
+          passengers: "1-4 Persons",
+          customerName: "",
+          phoneNumber: ""
+        });
       }
     } catch (error) {
-      console.error(error);
-      setErrorStatus(error.message || "Network error. Could not connect to the booking server.");
+      console.error('[Booking Submit Error]', error);
+      setErrorStatus(error.message || "Server is unavailable. Please try again later.");
     } finally {
       setIsLoading(false);
     }

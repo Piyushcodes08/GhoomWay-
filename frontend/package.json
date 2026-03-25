@@ -12,6 +12,8 @@
   "dependencies": {
     "@fontsource/poppins": "^5.2.7",
     "@tailwindcss/vite": "^4.2.1",
+    "axios": "^1.13.6",
+    "axios-retry": "^4.5.0",
     "clsx": "^2.1.1",
     "i18next": "^25.8.14",
     "lucide-react": "^0.576.0",

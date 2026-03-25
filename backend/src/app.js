@@ -12,7 +12,10 @@ const errorHandler = require('./middlewares/errorMiddleware');
 const app = express();
 
 // 1. GLOBAL CORS (Must be at top for preflight)
-app.use(cors());
+app.use(cors({
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  credentials: true,
+}));
 
 // 2. Security Headers & Performance
 app.use(helmet());
