@@ -183,9 +183,10 @@ exports.updateBookingStatus = async (req, res, next) => {
     console.log(`[Booking] ✅ Status updated to "${status}" for ${booking.bookingId}`);
 
     // 💬 Direct SMS to customer for status updates
-    if (status === 'Accepted' || status === 'Rejected') {
-      sendSMSNotification(status, booking).catch((err) =>
-        console.error(`[Booking] Customer SMS error (${status}): ${err.message}`)
+    const sanitizedStatus = status ? status.trim() : '';
+    if (sanitizedStatus === 'Accepted' || sanitizedStatus === 'Rejected') {
+      sendSMSNotification(sanitizedStatus, booking).catch((err) =>
+        console.error(`[Booking] Customer SMS error (${sanitizedStatus}): ${err.message}`)
       );
     }
 

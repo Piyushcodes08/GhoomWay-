@@ -25,11 +25,18 @@ const normalizePhoneNumber = (phone) => {
  * @desc    Get SMS message body based on booking status
  */
 const getMessageBody = (status, booking) => {
-  const pickupDateStr = new Date(booking.pickupDate).toLocaleDateString('en-IN', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
+  let pickupDateStr = 'Soon';
+  try {
+    if (booking.pickupDate) {
+      pickupDateStr = new Date(booking.pickupDate).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+  } catch (err) {
+    console.warn(`[SMS] Date formatting error for ${booking.bookingId}: ${err.message}`);
+  }
 
   switch (status) {
     case 'Accepted':
@@ -77,33 +84,16 @@ const sendSMSNotification = async (status, bookingData) => {
 
     const client = twilio(TWILIO_ACCOUNT_SID.trim(), TWILIO_AUTH_TOKEN.trim());
 
-    console.log(`[SMS] Executing Twilio call | From: "${TWILIO_SMS_NUMBER.trim()}" | To: "${recipient}"`);
-
     const response = await client.messages.create({
       body: body,
       from: TWILIO_SMS_NUMBER.trim(),
       to: recipient.trim(),
     });
 
-    const successMsg = `✅ Sent successfully. SID: ${response.sid}`;
-    console.log(`[SMS] ${successMsg}`);
+    console.log(`[SMS] ✅ Sent successfully. SID: ${response.sid}`);
     return true;
   } catch (error) {
-    const errorMsg = `❌ Failed to send: ${error.message}${error.code ? ` (Code: ${error.code})` : ''}`;
-    console.error(`[SMS] ${errorMsg}`);
-
-    // Production Troubleshooting Hints
-    const hints = {
-      21606: 'The "From" number +13187422354 is not associated with this Twilio Account SID. Please check your .env credentials.',
-      21608: 'Trial Account Restriction: The recipient number is NOT verified. Log in to Twilio Console > Phone Numbers > Verified Caller IDs to add it.',
-      21408: 'Permission Denied: International SMS is disabled for this country. Enable it in Twilio Console > Messaging > Settings > Geo-Permissions.',
-      21211: 'Invalid "To" number format. Ensure the customer entered a valid mobile number.',
-    };
-
-    if (hints[error.code]) {
-      console.warn(`[SMS] 💡 Tip: ${hints[error.code]}`);
-    }
-
+    console.error(`[SMS] ❌ Failed to send: ${error.message}${error.code ? ` (Code: ${error.code})` : ''}`);
     return false;
   }
 };
