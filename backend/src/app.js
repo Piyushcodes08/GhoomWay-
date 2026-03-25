@@ -30,8 +30,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Explicitly handle preflight for all routes
-app.options('*', cors());
 
 // 2. Security Headers & Performance
 app.use(helmet());
