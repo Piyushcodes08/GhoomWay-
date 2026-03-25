@@ -28,9 +28,11 @@ const seedAdmin = async () => {
       role: 'admin',
     });
 
-    console.log('Admin seeded successfully:');
-    console.log('Email: admin@ghoomway.com');
-    console.log('Password: Admin@123');
+    console.log('\n-----------------------------------');
+    console.log('✅ Admin seeded successfully:');
+    console.log(`📧 Email:    admin@ghoomway.com`);
+    console.log(`🔑 Password: Admin@123`);
+    console.log('-----------------------------------\n');
 
     process.exit();
   } catch (error) {

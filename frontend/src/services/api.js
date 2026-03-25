@@ -81,8 +81,13 @@ API.interceptors.response.use(
       // Map specific status codes to user-friendly messages
       switch (status) {
         case 401:
-          message = 'Session expired. Please log in again.';
-          localStorage.removeItem('adminToken'); // Auto-clean on 401
+          // If it's a login attempt, show a specific error
+          if (error.config.url.includes('/admin/login')) {
+            message = 'Invalid email or password. Please try again.';
+          } else {
+            message = 'Session expired. Please log in again.';
+            localStorage.removeItem('adminToken'); // Auto-clean on 401
+          }
           break;
         case 403:
           message = 'Access Denied: You do not have permission for this action.';
