@@ -11,95 +11,27 @@ const buildNotification = (type, booking, adminNumber) => {
     year: 'numeric',
   });
 
-  switch (type) {
-    case 'NEW_BOOKING_ADMIN':
-      return {
-        to: adminNumber,
-        body:
-          `🚀 *New Ride Request: ${booking.bookingId}*\n\n` +
-          `👤 *Customer:* ${booking.customerName}\n` +
-          `📞 *Phone:* ${booking.phoneNumber}\n\n` +
-          `🚖 *Trip Details:*\n` +
-          `  Type: ${booking.tripCategory} (${booking.tripType})\n` +
-          `  Pickup: ${booking.pickupCity}\n` +
-          (booking.dropCity ? `  Drop: ${booking.dropCity}\n` : '') +
-          (booking.rentalPackage ? `  Package: ${booking.rentalPackage}\n` : '') +
-          `  Date: ${pickupDateStr} @ ${booking.pickupTime}\n` +
-          `  Cab: ${booking.cabCategory} | Pax: ${booking.passengers}\n\n` +
-          `🚦 *Status:* Pending Review\n` +
-          `Open Admin Dashboard to Accept or Reject.\n\n` +
-          `⏰ *Received:* ${new Date().toLocaleString('en-IN')}`,
-      };
-
-    case 'NEW_BOOKING_USER':
-      return {
-        to: `whatsapp:+91${booking.phoneNumber}`,
-        body:
-          `🚖 *Booking Received – GhoomWay*\n\n` +
-          `Hi ${booking.customerName},\n\n` +
-          `Thank you for choosing GhoomWay! We've received your booking request *${booking.bookingId}*.\n\n` +
-          `📍 *Trip:* ${booking.pickupCity} ${booking.dropCity ? `to ${booking.dropCity}` : ''}\n` +
-          `📅 *Date:* ${pickupDateStr} @ ${booking.pickupTime}\n\n` +
-          `⏳ *What's Next?*\n` +
-          `Please wait 5-10 minutes. Our team is reviewing your request. You will receive the final trip details and fare options here shortly.\n\n` +
-          `Thank you for your patience! 🙏`,
-      };
-
-    case 'BOOKING_ACCEPTED_USER':
-      return {
-        to: `whatsapp:+91${booking.phoneNumber}`,
-        body:
-          `✅ *Booking Confirmed – GhoomWay*\n\n` +
-          `Hi ${booking.customerName},\n\n` +
-          `Great news! Your booking *${booking.bookingId}* has been *confirmed*.\n\n` +
-          `🚖 *Trip Details:*\n` +
-          `  Pickup: ${booking.pickupCity}\n` +
-          (booking.dropCity ? `  Drop: ${booking.dropCity}\n` : '') +
-          `  Date: ${pickupDateStr} @ ${booking.pickupTime}\n` +
-          `  Cab: ${booking.cabCategory}\n\n` +
-          (booking.adminRemark ? `📌 *Note:* ${booking.adminRemark}\n\n` : '') +
-          `Driver details will be shared shortly. Stay tuned!\n\n` +
-          `Thank you for choosing *GhoomWay* 🙏`,
-      };
-
-    case 'BOOKING_REJECTED_USER':
-      return {
-        to: `whatsapp:+91${booking.phoneNumber}`,
-        body:
-          `❌ *Booking Update – GhoomWay*\n\n` +
-          `Hi ${booking.customerName},\n\n` +
-          `We regret to inform you that your booking *${booking.bookingId}* could not be confirmed at this time.\n\n` +
-          (booking.adminRemark ? `📌 *Reason:* ${booking.adminRemark}\n\n` : '') +
-          `We apologize for the inconvenience. Please try booking again or contact us for assistance.\n\n` +
-          `Thank you for your understanding 🙏\n*– Team GhoomWay*`,
-      };
-
-    case 'BOOKING_COMPLETED_USER':
-      return {
-        to: `whatsapp:+91${booking.phoneNumber}`,
-        body:
-          `🏁 *Trip Completed – GhoomWay*\n\n` +
-          `Hi ${booking.customerName},\n\n` +
-          `We hope you had a pleasant journey! Your booking *${booking.bookingId}* is now marked as *completed*.\n\n` +
-          `🙏 *Thank you for riding with us!*\n\n` +
-          `We'd love to hear your feedback. See you on your next trip! 🚗💨`,
-      };
-
-    case 'BOOKING_CANCELLED_USER':
-      return {
-        to: `whatsapp:+91${booking.phoneNumber}`,
-        body:
-          `🚫 *Booking Cancelled – GhoomWay*\n\n` +
-          `Hi ${booking.customerName},\n\n` +
-          `Your booking *${booking.bookingId}* has been *cancelled*.\n\n` +
-          (booking.adminRemark ? `📌 *Note:* ${booking.adminRemark}\n\n` : '') +
-          `If this was a mistake, please book again or contact support.\n\n` +
-          `We hope to serve you again soon! 🙏`,
-      };
-
-    default:
-      return null;
+  if (type === 'NEW_BOOKING_ADMIN') {
+    return {
+      to: adminNumber,
+      body:
+        `🚀 *New Ride Request: ${booking.bookingId}*\n\n` +
+        `👤 *Customer:* ${booking.customerName}\n` +
+        `📞 *Phone:* ${booking.phoneNumber}\n\n` +
+        `🚖 *Trip Details:*\n` +
+        `  Type: ${booking.tripCategory} (${booking.tripType})\n` +
+        `  Pickup: ${booking.pickupCity}\n` +
+        (booking.dropCity ? `  Drop: ${booking.dropCity}\n` : '') +
+        (booking.rentalPackage ? `  Package: ${booking.rentalPackage}\n` : '') +
+        `  Date: ${pickupDateStr} @ ${booking.pickupTime}\n` +
+        `  Cab: ${booking.cabCategory} | Pax: ${booking.passengers}\n\n` +
+        `🚦 *Status:* Pending Review\n` +
+        `Open Admin Dashboard to Accept or Reject.\n\n` +
+        `⏰ *Received:* ${new Date().toLocaleString('en-IN')}`,
+    };
   }
+
+  return null;
 };
 
 /**
@@ -136,12 +68,12 @@ const sendWhatsAppNotification = async (type, bookingData) => {
 
     console.log(`[WhatsApp] Sending to: ${notification.to}`);
 
-    const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+    const client = twilio(TWILIO_ACCOUNT_SID.trim(), TWILIO_AUTH_TOKEN.trim());
 
     const response = await client.messages.create({
       body: notification.body,
-      from: TWILIO_WHATSAPP_NUMBER,
-      to: notification.to,
+      from: TWILIO_WHATSAPP_NUMBER.trim(),
+      to: notification.to.trim(),
     });
 
     const successMsg = `✅ Sent successfully. SID: ${response.sid} | Status: ${response.status}`;

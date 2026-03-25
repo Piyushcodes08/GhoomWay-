@@ -1,5 +1,6 @@
 const Booking = require('../models/Booking');
 const { sendWhatsAppNotification } = require('../services/whatsappService');
+const { sendSMSNotification } = require('../services/smsService');
 const ErrorResponse = require('../utils/errorResponse');
 
 // In-memory fallback store for when DB is offline
@@ -35,20 +36,12 @@ exports.createBooking = async (req, res, next) => {
       console.log(`[Booking] ✅ Saved to DB: ${booking.bookingId} (${booking._id})`);
     }
 
-    // Fire-and-forget WhatsApp notifications (Admin & User)
+    // 🔥 Internal booking alert for admin only (WhatsApp)
     sendWhatsAppNotification('NEW_BOOKING_ADMIN', booking)
       .then((sent) => {
-        if (sent) console.log(`[Booking] WhatsApp admin notification sent for ${booking.bookingId}`);
-        else console.warn(`[Booking] WhatsApp admin notification failed for ${booking.bookingId}`);
+        if (sent) console.log(`[Booking] Admin WhatsApp alert sent for ${booking.bookingId}`);
       })
       .catch((err) => console.error(`[Booking] Admin WhatsApp error: ${err.message}`));
-
-    sendWhatsAppNotification('NEW_BOOKING_USER', booking)
-      .then((sent) => {
-        if (sent) console.log(`[Booking] WhatsApp user notification sent for ${booking.bookingId}`);
-        else console.warn(`[Booking] WhatsApp user notification failed for ${booking.bookingId}`);
-      })
-      .catch((err) => console.error(`[Booking] User WhatsApp error: ${err.message}`));
 
     return res.status(201).json({
       success: true,
@@ -189,22 +182,10 @@ exports.updateBookingStatus = async (req, res, next) => {
 
     console.log(`[Booking] ✅ Status updated to "${status}" for ${booking.bookingId}`);
 
-    // Dispatch customer WhatsApp notification on terminal admin decisions
-    if (status === 'Accepted') {
-      sendWhatsAppNotification('BOOKING_ACCEPTED_USER', booking).catch((err) =>
-        console.error(`[Booking] Customer notification error (Accept): ${err.message}`)
-      );
-    } else if (status === 'Rejected') {
-      sendWhatsAppNotification('BOOKING_REJECTED_USER', booking).catch((err) =>
-        console.error(`[Booking] Customer notification error (Reject): ${err.message}`)
-      );
-    } else if (status === 'Completed') {
-      sendWhatsAppNotification('BOOKING_COMPLETED_USER', booking).catch((err) =>
-        console.error(`[Booking] Customer notification error (Complete): ${err.message}`)
-      );
-    } else if (status === 'Cancelled') {
-      sendWhatsAppNotification('BOOKING_CANCELLED_USER', booking).catch((err) =>
-        console.error(`[Booking] Customer notification error (Cancel): ${err.message}`)
+    // 💬 Direct SMS to customer for status updates
+    if (status === 'Accepted' || status === 'Rejected') {
+      sendSMSNotification(status, booking).catch((err) =>
+        console.error(`[Booking] Customer SMS error (${status}): ${err.message}`)
       );
     }
 
