@@ -16,8 +16,7 @@ export const login = async (email, password) => {
 
     return data;
   } catch (error) {
-    console.error('Login Error:', error.userMessage || error.message);
-    throw new Error(error.userMessage || 'Login failed. Please check your credentials.');
+    throw error;
   }
 };
 

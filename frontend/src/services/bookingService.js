@@ -9,7 +9,7 @@ export const createBooking = async (bookingData) => {
     const response = await API.post('/api/v1/bookings', bookingData);
     return response.data;
   } catch (error) {
-    throw new Error(error.userMessage || 'Something went wrong during booking.');
+    throw error; // Re-throw to let component handle it (it now has userMessage attached)
   }
 };
 
@@ -26,7 +26,7 @@ export const fetchBookings = async (params = {}) => {
     const response = await API.get(`/api/v1/bookings?${query.toString()}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.userMessage || 'Failed to fetch bookings.');
+    throw error;
   }
 };
 
@@ -39,7 +39,7 @@ export const fetchBookingById = async (id) => {
     const response = await API.get(`/api/v1/bookings/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error(error.userMessage || 'Failed to fetch booking.');
+    throw error;
   }
 };
 
@@ -55,6 +55,6 @@ export const updateBookingStatus = async (id, status, adminRemark) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(error.userMessage || 'Failed to update booking status.');
+    throw error;
   }
 };
