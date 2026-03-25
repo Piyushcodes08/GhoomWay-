@@ -12,10 +12,26 @@ const errorHandler = require('./middlewares/errorMiddleware');
 const app = express();
 
 // 1. GLOBAL CORS (Must be at top for preflight)
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : ['https://ghoom-way.vercel.app']),
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow server-to-server / curl requests (no origin header)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin '${origin}' not allowed`));
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
+
+// Explicitly handle preflight for all routes
+app.options('*', cors());
 
 // 2. Security Headers & Performance
 app.use(helmet());
