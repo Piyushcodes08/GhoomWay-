@@ -24,6 +24,11 @@ export default function CabBooking() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorStatus, setErrorStatus] = useState(null);
+
+  // Custom AM/PM time picker state
+  const [timeHour, setTimeHour] = useState("");
+  const [timeMinute, setTimeMinute] = useState("00");
+  const [timePeriod, setTimePeriod] = useState("AM");
   
   // Controlled Form State
   const [formData, setFormData] = useState({
@@ -55,6 +60,28 @@ export default function CabBooking() {
     const { name, value } = e.target;
     setErrorStatus(null);
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  // Sync hour/minute/period → formData.pickupTime as "HH:MM AM/PM"
+  const syncPickupTime = (h, m, p) => {
+    if (!h) return;
+    const formatted = `${h}:${m} ${p}`;
+    setFormData(prev => ({ ...prev, pickupTime: formatted }));
+  };
+
+  const handleHourChange = (e) => {
+    const h = e.target.value;
+    setTimeHour(h);
+    syncPickupTime(h, timeMinute, timePeriod);
+  };
+  const handleMinuteChange = (e) => {
+    const m = e.target.value;
+    setTimeMinute(m);
+    syncPickupTime(timeHour, m, timePeriod);
+  };
+  const handlePeriodChange = (p) => {
+    setTimePeriod(p);
+    syncPickupTime(timeHour, timeMinute, p);
   };
 
   const handleBookingSubmit = async (e) => {
@@ -89,6 +116,7 @@ export default function CabBooking() {
       
       if (data.success) {
         setShowSuccess(true);
+        setTimeHour(''); setTimeMinute('00'); setTimePeriod('AM');
         // Reset form on success
         setFormData({
           pickupCity: "",
@@ -114,6 +142,7 @@ export default function CabBooking() {
 
   const closeSuccessModal = () => {
     setShowSuccess(false);
+    setTimeHour(''); setTimeMinute('00'); setTimePeriod('AM');
     setFormData({
       pickupCity: "",
       dropCity: "",
@@ -343,19 +372,56 @@ export default function CabBooking() {
                 </div>
               )}
 
-              {/* Pickup Time */}
+              {/* Pickup Time — custom AM/PM picker */}
               <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
                 <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Pick-up Time</label>
-                <div className="flex items-center text-slate-700 relative">
-                  <Clock size={18} className="mr-2 text-[#31468e] shrink-0" />
-                  <input
-                    type="time"
-                    name="pickupTime"
-                    value={formData.pickupTime}
-                    onChange={handleInputChange}
+                <div className="flex items-center gap-1.5 text-slate-700">
+                  <Clock size={18} className="text-[#31468e] shrink-0" />
+
+                  {/* Hour */}
+                  <select
+                    value={timeHour}
+                    onChange={handleHourChange}
                     required
-                    className="w-full bg-transparent text-sm outline-none font-bold cursor-pointer"
-                  />
+                    className="bg-transparent text-sm font-bold outline-none cursor-pointer"
+                  >
+                    <option value="" disabled>HH</option>
+                    {[...Array(12)].map((_, i) => {
+                      const h = String(i + 1).padStart(2, '0');
+                      return <option key={h} value={h}>{h}</option>;
+                    })}
+                  </select>
+
+                  <span className="font-black text-slate-400 text-sm">:</span>
+
+                  {/* Minute */}
+                  <select
+                    value={timeMinute}
+                    onChange={handleMinuteChange}
+                    className="bg-transparent text-sm font-bold outline-none cursor-pointer"
+                  >
+                    {['00','15','30','45'].map(m => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+
+                  {/* AM / PM Toggle */}
+                  <div className="ml-auto flex rounded-lg overflow-hidden border border-slate-200">
+                    {['AM','PM'].map(p => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => handlePeriodChange(p)}
+                        className={`px-2.5 py-1 text-xs font-black transition-all ${
+                          timePeriod === p
+                            ? 'bg-[#31468e] text-white'
+                            : 'bg-white text-slate-400 hover:text-[#31468e]'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 

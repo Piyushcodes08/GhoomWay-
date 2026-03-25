@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Search, RefreshCw, Eye, CheckCircle2, XCircle, 
-  MapPin, Clock, BarChart3, TrendingUp, X
+import {
+  Search, RefreshCw, Eye, CheckCircle2, XCircle,
+  MapPin, Clock, BarChart3, TrendingUp, X, LogOut,
+  Users, Car, AlertCircle, ChevronRight, Filter
 } from "lucide-react";
 import { fetchBookings, updateBookingStatus } from "../services/bookingService";
 import { getStoredUser, logout } from "../services/authService";
@@ -13,6 +14,14 @@ import BookingDetailModal from "../components/booking/BookingDetailModal";
 
 const TAB_STATUSES = ['All', 'Pending', 'Accepted', 'Rejected', 'Completed', 'Cancelled'];
 
+const STATUS_DOT = {
+  Pending: '#f59e0b',
+  Accepted: '#10b981',
+  Rejected: '#f43f5e',
+  Completed: '#3b82f6',
+  Cancelled: '#94a3b8',
+};
+
 export default function AdminDashboard() {
   const admin = getStoredUser();
   const [bookings, setBookings] = useState([]);
@@ -21,34 +30,28 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  
-  // Modals & Toasts
+
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [confirmationModal, setConfirmationModal] = useState({ 
-    open: false, 
-    type: 'Accepted', 
-    booking: null 
+  const [confirmationModal, setConfirmationModal] = useState({
+    open: false, type: 'Accepted', booking: null
   });
   const [toast, setToast] = useState(null);
 
-  // Stats calculation
   const stats = {
     total: bookings.length,
     pending: bookings.filter(b => b.status === 'Pending').length,
     accepted: bookings.filter(b => b.status === 'Accepted').length,
     rejected: bookings.filter(b => b.status === 'Rejected' || b.status === 'Cancelled').length,
+    completed: bookings.filter(b => b.status === 'Completed').length,
   };
 
   const loadData = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
-    
     try {
       const data = await fetchBookings();
-      if (data.success) {
-        setBookings(data.data);
-      }
+      if (data.success) setBookings(data.data);
     } catch (error) {
       setToast({ message: error.message, type: 'error' });
     } finally {
@@ -57,16 +60,11 @@ export default function AdminDashboard() {
     }
   }, []);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  useEffect(() => { loadData(); }, [loadData]);
 
-  // Debounce search effect
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 500);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setDebouncedSearch(searchTerm), 500);
+    return () => clearTimeout(t);
   }, [searchTerm]);
 
   const handleStatusUpdate = async (remark) => {
@@ -75,7 +73,6 @@ export default function AdminDashboard() {
     try {
       const data = await updateBookingStatus(booking._id, type, remark);
       if (data.success) {
-        // Optimistic UI update: replace the individual booking in the list
         setBookings(prev => prev.map(b => b._id === booking._id ? data.data : b));
         setToast({ message: `Booking ${type.toLowerCase()} successfully!`, type: 'success' });
       }
@@ -90,7 +87,7 @@ export default function AdminDashboard() {
   const filteredBookings = bookings.filter(b => {
     const matchesStatus = statusFilter === 'All' || b.status === statusFilter;
     const s = debouncedSearch.toLowerCase();
-    const matchesSearch = !s || 
+    const matchesSearch = !s ||
       b.bookingId?.toLowerCase().includes(s) ||
       b.customerName?.toLowerCase().includes(s) ||
       b.phoneNumber?.includes(s) ||
@@ -98,225 +95,258 @@ export default function AdminDashboard() {
     return matchesStatus && matchesSearch;
   });
 
+  /* ─── Skeleton loader ─── */
   if (loading && bookings.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 p-4 md:p-8 pt-24 md:pt-28">
-        <div className="max-w-7xl mx-auto space-y-8 animate-pulse">
-          <div className="flex flex-col md:flex-row justify-between gap-6">
-            <div className="space-y-3">
-              <div className="h-4 w-32 bg-slate-200 rounded-full" />
-              <div className="h-10 w-64 bg-slate-200 rounded-2xl" />
-              <div className="h-4 w-48 bg-slate-200 rounded-full" />
-            </div>
-            <div className="flex gap-3">
-              <div className="h-12 w-32 bg-slate-200 rounded-2xl" />
-              <div className="h-12 w-32 bg-slate-200 rounded-2xl" />
-            </div>
+      <div style={styles.page}>
+        <div style={styles.topbar}>
+          <div style={styles.topbarLeft}>
+            <div style={styles.logo}>G</div>
+            <span style={styles.logoText}>GhoomWay <span style={styles.logoBadge}>Admin</span></span>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => <div key={i} className="h-28 bg-slate-200 rounded-[2rem]" />)}
+        </div>
+        <div style={styles.container}>
+          <div style={{ ...styles.skeletonBlock, height: 48, width: 260, marginBottom: 8, borderRadius: 12 }} />
+          <div style={{ ...styles.skeletonBlock, height: 28, width: 380, marginBottom: 32, borderRadius: 8 }} />
+          <div style={styles.statsGrid}>
+            {[1,2,3,4].map(i => <div key={i} style={{ ...styles.skeletonBlock, height: 104, borderRadius: 16 }} />)}
           </div>
-          <div className="h-[500px] bg-white rounded-[2.5rem] border border-slate-200" />
+          <div style={{ ...styles.skeletonBlock, height: 480, borderRadius: 20, marginTop: 24 }} />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8 pt-24 md:pt-28">
-      <div className="max-w-7xl mx-auto space-y-8">
-        
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-[#31468e] rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-100">
-                {admin?.name?.charAt(0) || 'A'}
-              </div>
-              <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Logged in as {admin?.name || 'Administrator'}</p>
-            </div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight">Booking Central</h1>
-            <p className="text-slate-500 font-bold flex items-center gap-2">
-              <TrendingUp size={16} className="text-emerald-500" /> 
+    <div style={styles.page}>
+
+      {/* ── Top Navigation Bar ── */}
+      <header style={styles.topbar}>
+        <div style={styles.topbarLeft}>
+          <div style={styles.logo}>G</div>
+          <span style={styles.logoText}>GhoomWay <span style={styles.logoBadge}>Admin</span></span>
+        </div>
+        <div style={styles.topbarRight}>
+          <button
+            onClick={() => loadData(true)}
+            disabled={refreshing}
+            style={styles.refreshBtn}
+            className="admin-btn"
+          >
+            <RefreshCw size={15} style={{ ...(refreshing ? styles.spin : {}) }} />
+            {refreshing ? 'Refreshing…' : 'Refresh'}
+          </button>
+          <div style={styles.adminChip}>
+            <div style={styles.adminAvatar}>{admin?.name?.charAt(0) || 'A'}</div>
+            <span style={styles.adminName}>{admin?.name || 'Admin'}</span>
+          </div>
+          <button onClick={logout} style={styles.logoutBtn} className="admin-btn" title="Sign out">
+            <LogOut size={16} />
+          </button>
+        </div>
+      </header>
+
+      {/* ── Main Content ── */}
+      <main style={styles.container}>
+
+        {/* Page heading */}
+        <div style={styles.pageHeading}>
+          <div>
+            <h1 style={styles.h1}>Booking Central</h1>
+            <p style={styles.subtext}>
+              <TrendingUp size={14} style={{ color: '#10b981', marginRight: 6, flexShrink: 0 }} />
               Monitoring {bookings.length} total ride operations
             </p>
           </div>
-          
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => loadData(true)}
-              disabled={refreshing}
-              className="flex items-center gap-2 bg-white border border-slate-200 px-5 py-3 rounded-2xl font-black text-slate-600 hover:bg-slate-50 transition-all shadow-sm active:scale-95 disabled:opacity-50"
-            >
-              <RefreshCw size={18} className={refreshing ? 'animate-spin' : ''} />
-              {refreshing ? 'Refreshing...' : 'Refresh Feed'}
-            </button>
-            <button 
-              onClick={logout}
-              className="flex items-center gap-2 bg-rose-50 border border-rose-100 px-5 py-3 rounded-2xl font-black text-rose-600 hover:bg-rose-100 transition-all shadow-sm active:scale-95"
-            >
-              Sign Out
-            </button>
-          </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* ── Stat Cards ── */}
+        <div style={styles.statsGrid}>
           {[
-            { label: 'Total Rides', value: stats.total, icon: <BarChart3 />, color: 'text-slate-900', bg: 'bg-white' },
-            { label: 'Pending', value: stats.pending, icon: <Clock />, color: 'text-amber-600', bg: 'bg-amber-50/50' },
-            { label: 'Confirmed', value: stats.accepted, icon: <CheckCircle2 />, color: 'text-emerald-600', bg: 'bg-emerald-50/50' },
-            { label: 'Rejected/Cancelled', value: stats.rejected, icon: <XCircle />, color: 'text-rose-600', bg: 'bg-rose-50/50' },
+            { label: 'Total Rides', value: stats.total, icon: <Car size={20} />, accent: '#6366f1', bg: 'rgba(99,102,241,0.08)' },
+            { label: 'Pending Review', value: stats.pending, icon: <AlertCircle size={20} />, accent: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
+            { label: 'Confirmed', value: stats.accepted, icon: <CheckCircle2 size={20} />, accent: '#10b981', bg: 'rgba(16,185,129,0.08)' },
+            { label: 'Completed', value: stats.completed, icon: <BarChart3 size={20} />, accent: '#3b82f6', bg: 'rgba(59,130,246,0.08)' },
           ].map((s, i) => (
-            <motion.div 
+            <motion.div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className={`${s.bg} p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center gap-5`}
+              transition={{ delay: i * 0.07, duration: 0.4 }}
+              style={{ ...styles.statCard }}
             >
-              <div className={`p-4 rounded-2xl bg-white shadow-sm ${s.color}`}>
+              <div style={{ ...styles.statIcon, background: s.bg, color: s.accent }}>
                 {s.icon}
               </div>
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{s.label}</p>
-                <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+                <p style={styles.statLabel}>{s.label}</p>
+                <p style={{ ...styles.statValue, color: s.accent }}>{s.value}</p>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* Filter Bar */}
-        <div className="bg-white p-2 rounded-[2rem] border border-slate-200 shadow-sm flex flex-col lg:flex-row gap-4 items-center overflow-hidden">
-          <div className="flex bg-slate-50 p-1 rounded-2xl w-full lg:w-fit overflow-x-auto no-scrollbar">
+        {/* ── Filter + Search Bar ── */}
+        <div style={styles.filterBar}>
+          {/* Tab pills */}
+          <div style={styles.tabRow}>
             {TAB_STATUSES.map(t => (
-              <button 
+              <button
                 key={t}
                 onClick={() => setStatusFilter(t)}
-                className={`px-5 py-2.5 rounded-xl font-black text-sm transition-all whitespace-nowrap ${
-                  statusFilter === t 
-                    ? 'bg-[#31468e] text-white shadow-lg shadow-blue-200' 
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-white'
-                }`}
+                style={{
+                  ...styles.tab,
+                  ...(statusFilter === t ? styles.tabActive : {}),
+                }}
+                className="admin-tab"
               >
+                {t !== 'All' && (
+                  <span style={{
+                    ...styles.tabDot,
+                    background: STATUS_DOT[t] || '#94a3b8',
+                    opacity: statusFilter === t ? 1 : 0.5,
+                  }} />
+                )}
                 {t}
               </button>
             ))}
           </div>
-          
-          <div className="relative flex-1 w-full flex items-center bg-slate-50 rounded-2xl border border-slate-100 px-4 group focus-within:ring-2 focus-within:ring-[#31468e]/10 transition-all">
-            <Search size={18} className="text-slate-400 group-focus-within:text-[#31468e] transition-colors" />
-            <input 
+
+          {/* Search */}
+          <div style={styles.searchWrap}>
+            <Search size={16} style={styles.searchIcon} />
+            <input
               type="text"
-              placeholder="Search by ID, Name, Phone, or City..."
+              placeholder="Search by ID, name, phone or city…"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-transparent border-none py-3 px-3 text-sm font-bold text-slate-700 placeholder:text-slate-300 focus:outline-none"
+              onChange={e => setSearchTerm(e.target.value)}
+              style={styles.searchInput}
             />
             {searchTerm && (
-              <button onClick={() => setSearchTerm('')} className="text-slate-300 hover:text-slate-500">
-                <X size={16} />
+              <button onClick={() => setSearchTerm('')} style={styles.clearBtn}>
+                <X size={14} />
               </button>
             )}
           </div>
         </div>
 
-        {/* Table Container */}
-        <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+        {/* ── Results summary ── */}
+        <div style={styles.resultsMeta}>
+          <Filter size={13} style={{ color: '#94a3b8', marginRight: 6 }} />
+          <span style={styles.resultsText}>
+            {filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''} found
+            {statusFilter !== 'All' ? ` · ${statusFilter}` : ''}
+          </span>
+        </div>
+
+        {/* ── Table ── */}
+        <div style={styles.tableCard}>
+          <div style={styles.tableScroll}>
+            <table style={styles.table}>
               <thead>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Booking ID</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Customer</th>
-                  <th className="hidden lg:table-cell px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type & Location</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Schedule</th>
-                  <th className="hidden sm:table-cell px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                <tr style={styles.thead}>
+                  <th style={styles.th}>Booking ID</th>
+                  <th style={styles.th}>Customer</th>
+                  <th style={styles.th} className="md-hide">Route</th>
+                  <th style={styles.th}>Date & Time</th>
+                  <th style={styles.th} className="sm-hide">Status</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody>
                 <AnimatePresence mode="popLayout">
-                  {filteredBookings.map((b) => (
-                    <motion.tr 
+                  {filteredBookings.map((b, idx) => (
+                    <motion.tr
                       key={b._id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0 }}
-                      layout
-                      className="group hover:bg-slate-50/50 transition-colors"
+                      transition={{ delay: idx * 0.02 }}
+                      style={styles.tr}
+                      className="admin-row"
                     >
-                      <td className="px-8 py-6">
-                        <span className="font-black text-slate-900 group-hover:text-[#31468e] transition-colors">
-                          {b.bookingId}
-                        </span>
+                      {/* Booking ID */}
+                      <td style={styles.td}>
+                        <span style={styles.bookingId}>{b.bookingId}</span>
                       </td>
-                      <td className="px-8 py-6">
-                        <div className="space-y-1">
-                          <p className="font-black text-slate-800">{b.customerName}</p>
-                          <p className="text-xs font-bold text-slate-400">{b.phoneNumber}</p>
+
+                      {/* Customer */}
+                      <td style={styles.td}>
+                        <div style={styles.customerWrap}>
+                          <div style={styles.customerAvatar}>
+                            {b.customerName?.charAt(0) || '?'}
+                          </div>
+                          <div>
+                            <p style={styles.customerName}>{b.customerName}</p>
+                            <p style={styles.customerPhone}>{b.phoneNumber}</p>
+                          </div>
                         </div>
                       </td>
-                      <td className="hidden lg:table-cell px-8 py-6">
-                        <div className="space-y-1">
-                          <p className="font-bold text-slate-700 text-sm flex items-center gap-1.5">
-                            <MapPin size={14} className="text-emerald-500" /> {b.pickupCity}
-                          </p>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter bg-slate-100 w-fit px-1.5 py-0.5 rounded">
-                            {b.tripCategory} • {b.tripType}
-                          </p>
-                        </div>
+
+                      {/* Route – hidden on md */}
+                      <td style={styles.td} className="md-hide">
+                        <p style={styles.routeCity}>
+                          <MapPin size={12} style={{ color: '#10b981', flexShrink: 0 }} />
+                          {b.pickupCity}
+                        </p>
+                        <p style={styles.routeBadge}>{b.tripCategory} · {b.tripType}</p>
                       </td>
-                      <td className="px-8 py-6">
-                        <div className="space-y-1">
-                          <p className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
-                            <Clock size={14} className="text-[#31468e]" /> {b.pickupTime}
-                          </p>
-                          <p className="text-xs font-bold text-slate-400">{new Date(b.pickupDate).toLocaleDateString()}</p>
-                        </div>
+
+                      {/* Date & Time */}
+                      <td style={styles.td}>
+                        <p style={styles.schedTime}>
+                          <Clock size={12} style={{ color: '#6366f1', flexShrink: 0 }} />
+                          {b.pickupTime}
+                        </p>
+                        <p style={styles.schedDate}>{new Date(b.pickupDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </td>
-                      <td className="hidden sm:table-cell px-8 py-6">
+
+                      {/* Status – hidden on sm */}
+                      <td style={styles.td} className="sm-hide">
                         <StatusBadge status={b.status} />
                       </td>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center justify-end gap-2">
-                          <button 
-                            onClick={() => {
-                              setSelectedBooking(b);
-                              setDetailModalOpen(true);
-                            }}
-                            className="p-2.5 bg-slate-100 text-slate-500 hover:bg-[#31468e] hover:text-white rounded-xl transition-all"
-                            title="View Details"
+
+                      {/* Actions */}
+                      <td style={styles.td}>
+                        <div style={styles.actions}>
+                          <button
+                            onClick={() => { setSelectedBooking(b); setDetailModalOpen(true); }}
+                            style={styles.actionBtn}
+                            className="action-view"
+                            title="View details"
                           >
-                            <Eye size={18} />
+                            <Eye size={15} />
                           </button>
-                          
+
                           {b.status === 'Pending' && (
                             <>
-                              <button 
+                              <button
                                 onClick={() => setConfirmationModal({ open: true, type: 'Accepted', booking: b })}
-                                className="p-2.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-500 hover:text-white rounded-xl transition-all"
+                                style={{ ...styles.actionBtn, ...styles.actionAccept }}
+                                className="action-accept"
                                 title="Accept"
                               >
-                                <CheckCircle2 size={18} />
+                                <CheckCircle2 size={15} />
                               </button>
-                              <button 
+                              <button
                                 onClick={() => setConfirmationModal({ open: true, type: 'Rejected', booking: b })}
-                                className="p-2.5 bg-rose-50 text-rose-600 hover:bg-rose-500 hover:text-white rounded-xl transition-all"
+                                style={{ ...styles.actionBtn, ...styles.actionReject }}
+                                className="action-reject"
                                 title="Reject"
                               >
-                                <XCircle size={18} />
+                                <XCircle size={15} />
                               </button>
                             </>
                           )}
-                          
+
                           {b.status === 'Accepted' && (
-                            <button 
+                            <button
                               onClick={() => setConfirmationModal({ open: true, type: 'Completed', booking: b })}
-                              className="p-2.5 bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white rounded-xl transition-all"
-                              title="Mark Completed"
+                              style={{ ...styles.actionBtn, ...styles.actionComplete }}
+                              className="action-complete"
+                              title="Mark completed"
                             >
-                              <CheckCircle2 size={18} />
+                              <CheckCircle2 size={15} />
                             </button>
                           )}
                         </div>
@@ -327,33 +357,31 @@ export default function AdminDashboard() {
               </tbody>
             </table>
           </div>
-          
+
+          {/* Empty state */}
           {filteredBookings.length === 0 && !loading && (
-            <div className="p-20 flex flex-col items-center justify-center text-center space-y-4">
-              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200">
-                <BarChart3 size={40} />
-              </div>
-              <div>
-                <p className="text-xl font-black text-slate-800">No operations found</p>
-                <p className="text-slate-400 font-bold">Try adjusting your filters or search terms.</p>
-              </div>
+            <div style={styles.emptyState}>
+              <div style={styles.emptyIcon}><BarChart3 size={36} /></div>
+              <p style={styles.emptyTitle}>No bookings found</p>
+              <p style={styles.emptySubtitle}>Try adjusting your filters or search terms.</p>
             </div>
           )}
         </div>
-      </div>
+      </main>
 
+      {/* ── Modals ── */}
       <ConfirmationModal
         isOpen={confirmationModal.open}
         onClose={() => setConfirmationModal({ open: false, type: 'Accepted', booking: null })}
         onConfirm={handleStatusUpdate}
         title={`${confirmationModal.type} Booking`}
-        message={`Confirming this action will update the booking to ${confirmationModal.type}.`}
+        message={`Confirming this action will update the booking status to ${confirmationModal.type}.`}
         confirmText={`Confirm ${confirmationModal.type}`}
         type={confirmationModal.type === 'Rejected' ? 'danger' : 'primary'}
         loading={refreshing}
       />
 
-      <BookingDetailModal 
+      <BookingDetailModal
         isOpen={detailModalOpen}
         onClose={() => setDetailModalOpen(false)}
         booking={selectedBooking}
@@ -361,13 +389,316 @@ export default function AdminDashboard() {
 
       <AnimatePresence>
         {toast && (
-          <Toast 
-            message={toast.message} 
-            type={toast.type} 
-            onClose={() => setToast(null)} 
-          />
+          <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
         )}
       </AnimatePresence>
+
+      {/* ── Scoped styles ── */}
+      <style>{`
+        * { box-sizing: border-box; }
+        .admin-btn:hover { opacity: 0.82; }
+        .admin-tab { border: none; cursor: pointer; }
+        .admin-tab:hover { background: rgba(99,102,241,0.08) !important; color: #6366f1 !important; }
+        .admin-row:hover td { background: rgba(99,102,241,0.03); }
+        .action-view:hover  { background: #6366f1 !important; color: #fff !important; }
+        .action-accept:hover{ background: #10b981 !important; color: #fff !important; }
+        .action-reject:hover{ background: #f43f5e !important; color: #fff !important; }
+        .action-complete:hover{ background: #3b82f6 !important; color: #fff !important; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) {
+          .md-hide { display: none !important; }
+        }
+        @media (max-width: 540px) {
+          .sm-hide { display: none !important; }
+        }
+        ::-webkit-scrollbar { height: 4px; width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 99px; }
+      `}</style>
     </div>
   );
 }
+
+/* ─── Design Tokens & Styles ─── */
+const styles = {
+  page: {
+    minHeight: '100vh',
+    background: '#f8fafc',
+    fontFamily: "'Inter', 'Segoe UI', sans-serif",
+  },
+
+  /* Top bar */
+  topbar: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 50,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 24px',
+    height: 64,
+    background: '#ffffff',
+    borderBottom: '1px solid #e2e8f0',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+  },
+  topbarLeft: { display: 'flex', alignItems: 'center', gap: 10 },
+  logo: {
+    width: 36, height: 36,
+    borderRadius: 10,
+    background: 'linear-gradient(135deg,#31468e,#6366f1)',
+    color: '#fff',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontWeight: 900, fontSize: 18,
+    boxShadow: '0 2px 8px rgba(99,102,241,0.3)',
+  },
+  logoText: {
+    fontWeight: 800, fontSize: 16, color: '#1e293b', letterSpacing: '-0.3px',
+  },
+  logoBadge: {
+    background: 'linear-gradient(90deg,#6366f1,#31468e)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    fontWeight: 900,
+  },
+  topbarRight: { display: 'flex', alignItems: 'center', gap: 10 },
+  refreshBtn: {
+    display: 'flex', alignItems: 'center', gap: 6,
+    padding: '8px 16px',
+    border: '1px solid #e2e8f0',
+    borderRadius: 10,
+    background: '#fff',
+    fontSize: 13, fontWeight: 700, color: '#475569',
+    cursor: 'pointer', transition: 'all 0.2s',
+  },
+  spin: { animation: 'spin 0.8s linear infinite' },
+  adminChip: {
+    display: 'flex', alignItems: 'center', gap: 8,
+    padding: '6px 12px',
+    background: '#f1f5f9',
+    borderRadius: 999,
+  },
+  adminAvatar: {
+    width: 28, height: 28,
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg,#31468e,#6366f1)',
+    color: '#fff',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontWeight: 900, fontSize: 13,
+  },
+  adminName: { fontSize: 13, fontWeight: 700, color: '#334155' },
+  logoutBtn: {
+    width: 36, height: 36,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    border: '1px solid #fecdd3',
+    borderRadius: 10,
+    background: '#fff1f2',
+    color: '#f43f5e',
+    cursor: 'pointer',
+  },
+
+  /* Container */
+  container: {
+    maxWidth: 1280,
+    margin: '0 auto',
+    padding: '32px 24px 64px',
+  },
+
+  /* Page heading */
+  pageHeading: {
+    display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between',
+    marginBottom: 28,
+  },
+  h1: {
+    fontSize: 30, fontWeight: 900,
+    color: '#0f172a', letterSpacing: '-0.7px', margin: 0,
+  },
+  subtext: {
+    display: 'flex', alignItems: 'center',
+    fontSize: 13, fontWeight: 600, color: '#64748b',
+    marginTop: 6,
+  },
+
+  /* Stats */
+  statsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+    gap: 16,
+    marginBottom: 24,
+  },
+  statCard: {
+    background: '#fff',
+    border: '1px solid #e2e8f0',
+    borderRadius: 16,
+    padding: '20px 22px',
+    display: 'flex', alignItems: 'center', gap: 16,
+    boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+  },
+  statIcon: {
+    width: 46, height: 46, borderRadius: 12,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    flexShrink: 0,
+  },
+  statLabel: { fontSize: 11, fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 2 },
+  statValue: { fontSize: 26, fontWeight: 900, lineHeight: 1 },
+
+  /* Filter bar */
+  filterBar: {
+    background: '#fff',
+    border: '1px solid #e2e8f0',
+    borderRadius: 16,
+    padding: '12px 16px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 12,
+    alignItems: 'center',
+    marginBottom: 12,
+    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+  },
+  tabRow: {
+    display: 'flex', gap: 4, flexWrap: 'wrap',
+  },
+  tab: {
+    display: 'flex', alignItems: 'center', gap: 6,
+    padding: '7px 14px',
+    borderRadius: 8,
+    fontSize: 13, fontWeight: 700,
+    color: '#64748b',
+    background: 'transparent',
+    transition: 'all 0.18s',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  },
+  tabActive: {
+    background: 'linear-gradient(135deg,#31468e,#6366f1)',
+    color: '#fff',
+    boxShadow: '0 2px 8px rgba(99,102,241,0.25)',
+  },
+  tabDot: {
+    width: 7, height: 7, borderRadius: '50%', flexShrink: 0,
+  },
+  searchWrap: {
+    flex: 1, minWidth: 200,
+    display: 'flex', alignItems: 'center',
+    background: '#f8fafc',
+    border: '1px solid #e2e8f0',
+    borderRadius: 10,
+    padding: '0 12px',
+    gap: 8,
+  },
+  searchIcon: { color: '#94a3b8', flexShrink: 0 },
+  searchInput: {
+    flex: 1, border: 'none', background: 'transparent',
+    padding: '9px 0',
+    fontSize: 13, fontWeight: 600,
+    color: '#334155',
+    outline: 'none',
+  },
+  clearBtn: {
+    background: 'none', border: 'none', cursor: 'pointer',
+    color: '#94a3b8', display: 'flex', alignItems: 'center', padding: 2,
+  },
+
+  /* Results meta */
+  resultsMeta: {
+    display: 'flex', alignItems: 'center',
+    marginBottom: 12, paddingLeft: 4,
+  },
+  resultsText: { fontSize: 12, fontWeight: 600, color: '#94a3b8' },
+
+  /* Table card */
+  tableCard: {
+    background: '#fff',
+    border: '1px solid #e2e8f0',
+    borderRadius: 20,
+    overflow: 'hidden',
+    boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
+  },
+  tableScroll: { overflowX: 'auto' },
+  table: { width: '100%', borderCollapse: 'collapse' },
+  thead: { background: '#f8fafc', borderBottom: '1px solid #f1f5f9' },
+  th: {
+    padding: '14px 20px',
+    fontSize: 10, fontWeight: 800,
+    color: '#94a3b8',
+    textTransform: 'uppercase', letterSpacing: '0.07em',
+    whiteSpace: 'nowrap',
+  },
+  tr: { borderBottom: '1px solid #f8fafc', transition: 'background 0.15s' },
+  td: { padding: '16px 20px', verticalAlign: 'middle' },
+
+  /* Table cell contents */
+  bookingId: {
+    fontFamily: "'Courier New', monospace",
+    fontWeight: 800, fontSize: 13,
+    color: '#1e293b',
+    background: '#f1f5f9',
+    padding: '3px 8px', borderRadius: 6,
+  },
+  customerWrap: { display: 'flex', alignItems: 'center', gap: 10 },
+  customerAvatar: {
+    width: 34, height: 34, borderRadius: '50%',
+    background: 'linear-gradient(135deg,#e0e7ff,#c7d2fe)',
+    color: '#4f46e5',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontWeight: 900, fontSize: 14, flexShrink: 0,
+  },
+  customerName: { fontSize: 13, fontWeight: 800, color: '#1e293b', marginBottom: 2 },
+  customerPhone: { fontSize: 11, fontWeight: 600, color: '#94a3b8' },
+
+  routeCity: {
+    display: 'flex', alignItems: 'center', gap: 5,
+    fontSize: 13, fontWeight: 700, color: '#334155', marginBottom: 4,
+  },
+  routeBadge: {
+    display: 'inline-block',
+    fontSize: 10, fontWeight: 800,
+    color: '#64748b',
+    background: '#f1f5f9',
+    borderRadius: 4, padding: '2px 6px',
+    textTransform: 'uppercase', letterSpacing: '0.04em',
+  },
+  schedTime: {
+    display: 'flex', alignItems: 'center', gap: 5,
+    fontSize: 13, fontWeight: 700, color: '#334155', marginBottom: 4,
+  },
+  schedDate: { fontSize: 11, fontWeight: 600, color: '#94a3b8' },
+
+  /* Action buttons */
+  actions: { display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 6 },
+  actionBtn: {
+    width: 32, height: 32,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    border: '1px solid #e2e8f0',
+    borderRadius: 8,
+    background: '#f8fafc',
+    color: '#64748b',
+    cursor: 'pointer',
+    transition: 'all 0.18s',
+  },
+  actionAccept: { background: '#f0fdf4', borderColor: '#bbf7d0', color: '#10b981' },
+  actionReject: { background: '#fff1f2', borderColor: '#fecdd3', color: '#f43f5e' },
+  actionComplete: { background: '#eff6ff', borderColor: '#bfdbfe', color: '#3b82f6' },
+
+  /* Empty state */
+  emptyState: {
+    padding: '72px 24px',
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+    textAlign: 'center',
+  },
+  emptyIcon: {
+    width: 72, height: 72, borderRadius: '50%',
+    background: '#f1f5f9',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: '#cbd5e1',
+  },
+  emptyTitle: { fontSize: 18, fontWeight: 800, color: '#1e293b' },
+  emptySubtitle: { fontSize: 14, fontWeight: 600, color: '#94a3b8' },
+
+  /* Skeleton */
+  skeletonBlock: {
+    background: 'linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%)',
+    backgroundSize: '200% 100%',
+    animation: 'shimmer 1.4s infinite',
+    borderRadius: 12,
+  },
+};
