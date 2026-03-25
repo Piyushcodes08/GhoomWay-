@@ -1,15 +1,4 @@
 const twilio = require('twilio');
-const fs = require('fs');
-const path = require('path');
-
-const logToFile = (msg) => {
-  const logMsg = `[${new Date().toISOString()}] ${msg}\n`;
-  try {
-    fs.appendFileSync(path.join(process.cwd(), 'whatsapp_debug.log'), logMsg);
-  } catch (err) {
-    // ignore
-  }
-};
 
 /**
  * @desc Builds message body and recipient for a given notification type.
@@ -120,9 +109,8 @@ const buildNotification = (type, booking, adminNumber) => {
  * @returns {boolean}            - true on success, false on failure (never throws)
  */
 const sendWhatsAppNotification = async (type, bookingData) => {
-  const startMsg = `Initiating notification: ${type} | Booking: ${bookingData.bookingId} | Recipient: ${bookingData.phoneNumber}`;
-  console.log(`\n[WhatsApp] ${startMsg}`);
-  logToFile(startMsg);
+  console.log(`\n[WhatsApp] Initiating notification: ${type} | Booking: ${bookingData.bookingId}`);
+  console.log(`[WhatsApp] Recipient: ${bookingData.phoneNumber || 'N/A'}`);
 
   try {
     const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER, ADMIN_WHATSAPP_NUMBER } =
@@ -158,12 +146,10 @@ const sendWhatsAppNotification = async (type, bookingData) => {
 
     const successMsg = `✅ Sent successfully. SID: ${response.sid} | Status: ${response.status}`;
     console.log(`[WhatsApp] ${successMsg}`);
-    logToFile(successMsg);
     return true;
   } catch (error) {
     const errorMsg = `❌ Failed to send "${type}": ${error.message}${error.code ? ` (Code: ${error.code})` : ''}`;
     console.error(`[WhatsApp] ${errorMsg}`);
-    logToFile(errorMsg);
     
     // Developer hints for common Twilio error codes
     const hints = {

@@ -7,14 +7,19 @@ const app = require('./app');
 dotenv.config({ path: require('path').resolve(__dirname, '../.env') });
 
 // Validate required env vars
-const requiredEnv = ['MONGO_URI', 'JWT_SECRET', 'JWT_EXPIRE'];
+const requiredEnv = ['MONGO_URI', 'JWT_SECRET'];
 requiredEnv.forEach(env => {
   if (!process.env[env]) {
-    console.warn(`⚠️ Warning: Environment variable ${env} is missing.`);
-    // In production, we should exit(1)
+    console.error(`❌ CRITICAL ERROR: Environment variable ${env} is missing.`);
     if (process.env.NODE_ENV === 'production') process.exit(1);
   }
 });
+
+// Provide defaults for optional/non-critical vars
+process.env.JWT_EXPIRE = process.env.JWT_EXPIRE || '30d';
+process.env.JWT_COOKIE_EXPIRE = process.env.JWT_COOKIE_EXPIRE || '30';
+process.env.PORT = process.env.PORT || 5000;
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
 
 // Force IPv4 first for MongoDB SRV resolution
