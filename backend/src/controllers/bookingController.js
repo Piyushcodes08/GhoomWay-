@@ -183,10 +183,14 @@ exports.updateBookingStatus = async (req, res, next) => {
     console.log(`[Booking] ✅ Status updated to "${status}" for ${booking.bookingId}`);
 
     // 💬 Direct SMS to customer for status updates
-    const sanitizedStatus = status ? status.trim() : '';
-    if (sanitizedStatus === 'Accepted' || sanitizedStatus === 'Rejected') {
-      sendSMSNotification(sanitizedStatus, booking).catch((err) =>
-        console.error(`[Booking] Customer SMS error (${sanitizedStatus}): ${err.message}`)
+    const sanitizedStatus = status ? status.toString().trim() : '';
+    const statusLower = sanitizedStatus.toLowerCase();
+
+    if (statusLower === 'accepted' || statusLower === 'rejected') {
+      // Map to proper display casing for the service
+      const displayStatus = statusLower === 'accepted' ? 'Accepted' : 'Rejected';
+      sendSMSNotification(displayStatus, booking).catch((err) =>
+        console.error(`[Booking] Customer SMS error (${displayStatus}): ${err.message}`)
       );
     }
 

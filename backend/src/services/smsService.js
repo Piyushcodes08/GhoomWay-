@@ -94,6 +94,18 @@ const sendSMSNotification = async (status, bookingData) => {
     return true;
   } catch (error) {
     console.error(`[SMS] ❌ Failed to send: ${error.message}${error.code ? ` (Code: ${error.code})` : ''}`);
+    
+    // Developer hints for common Twilio error codes
+    const hints = {
+      21408: 'Permission denied: Carrier is blocked or number is unverified.',
+      21608: 'Verify: Sandbox/Trial accounts can only send to verified caller IDs.',
+      20429: 'Limit: You have exceeded the daily message limit for this trial/sandbox.',
+      63038: 'Limit: You have exceeded the 50 message daily quota for this sandbox.',
+    };
+    if (hints[error.code]) {
+      console.warn(`[SMS] 💡 Tip: ${hints[error.code]}`);
+    }
+
     return false;
   }
 };
