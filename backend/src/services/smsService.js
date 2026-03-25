@@ -4,10 +4,21 @@ const twilio = require('twilio');
  * @desc    Normalize phone number to E.164 format (+91 for India)
  */
 const normalizePhoneNumber = (phone) => {
+  if (!phone) return null;
+  // Remove all non-digits
   const digits = phone.replace(/\D/g, '');
+  
+  // If 10 digits, assume India (+91)
   if (digits.length === 10) return `+91${digits}`;
+  
+  // If starts with 0 and is 11 digits (Indian local format), remove 0 and add +91
+  if (digits.length === 11 && digits.startsWith('0')) return `+91${digits.substring(1)}`;
+  
+  // If already starts with 91 and has 12 digits, just add +
   if (digits.length === 12 && digits.startsWith('91')) return `+${digits}`;
-  return `+${digits}`;
+  
+  // Default fallback (ensure it has a +)
+  return phone.startsWith('+') ? phone : `+${digits}`;
 };
 
 /**
@@ -64,20 +75,35 @@ const sendSMSNotification = async (status, bookingData) => {
     const recipient = normalizePhoneNumber(phoneNumber);
     console.log(`[SMS] Sending to: ${recipient}`);
 
-    const client = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+    const client = twilio(TWILIO_ACCOUNT_SID.trim(), TWILIO_AUTH_TOKEN.trim());
 
-    console.log(`[SMS] Executing Twilio call | From: "${TWILIO_SMS_NUMBER}" | To: "${recipient}"`);
+    console.log(`[SMS] Executing Twilio call | From: "${TWILIO_SMS_NUMBER.trim()}" | To: "${recipient}"`);
 
     const response = await client.messages.create({
       body: body,
       from: TWILIO_SMS_NUMBER.trim(),
-      to: recipient,
+      to: recipient.trim(),
     });
 
-    console.log(`[SMS] ✅ Sent successfully. SID: ${response.sid}`);
+    const successMsg = `✅ Sent successfully. SID: ${response.sid}`;
+    console.log(`[SMS] ${successMsg}`);
     return true;
   } catch (error) {
-    console.error(`[SMS] ❌ Failed to send: ${error.message}`);
+    const errorMsg = `❌ Failed to send: ${error.message}${error.code ? ` (Code: ${error.code})` : ''}`;
+    console.error(`[SMS] ${errorMsg}`);
+
+    // Production Troubleshooting Hints
+    const hints = {
+      21606: 'The "From" number +13187422354 is not associated with this Twilio Account SID. Please check your .env credentials.',
+      21608: 'Trial Account Restriction: The recipient number is NOT verified. Log in to Twilio Console > Phone Numbers > Verified Caller IDs to add it.',
+      21408: 'Permission Denied: International SMS is disabled for this country. Enable it in Twilio Console > Messaging > Settings > Geo-Permissions.',
+      21211: 'Invalid "To" number format. Ensure the customer entered a valid mobile number.',
+    };
+
+    if (hints[error.code]) {
+      console.warn(`[SMS] 💡 Tip: ${hints[error.code]}`);
+    }
+
     return false;
   }
 };
