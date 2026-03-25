@@ -1,36 +1,17 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Phone, Award, Star, Calendar } from "lucide-react";
 
 const features = [
-  {
-    icon: Phone,
-    title: "24/7 Customer Support",
-    description:
-      "Wherever you travel, whenever you need us, our support team stays available around the clock for a smooth and worry-free experience.",
-  },
-  {
-    icon: Award,
-    title: "Earn Exclusive Rewards",
-    description:
-      "Unlock premium benefits, collect rewards on every booking, and enjoy a travel experience designed to give you more every time.",
-  },
-  {
-    icon: Star,
-    title: "Trusted by Millions",
-    description:
-      "Plan confidently with authentic reviews, trusted recommendations, and real experiences shared by travelers across the world.",
-  },
-  {
-    icon: Calendar,
-    title: "Flexible Booking Options",
-    description:
-      "Stay in control with free cancellation, reserve now pay later options, and flexible plans tailored to the way you travel.",
-  },
+  { icon: Phone, title: "24/7 Customer Support", key: "24/7customersupport" },
+  { icon: Award, title: "Earn Exclusive Rewards", key: "earnexclusiverewards" },
+  { icon: Star, title: "Trusted by Millions", key: "trustedbymillions" },
+  { icon: Calendar, title: "Flexible Booking Options", key: "flexiblebookingoptions" },
 ];
 
-const featureList = features;
-
 const Features = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="relative overflow-hidden bg-[#f8f9fc] py-12 md:py-24">
       {/* Premium Background Layers */}
@@ -53,11 +34,11 @@ const Features = () => {
           className="mx-auto mb-16 max-w-4xl text-center"
         >
           <div className="mb-5 inline-flex items-center rounded-full border border-[#31468e]/10 bg-white/80 px-5 py-2 text-sm font-medium text-[#31468e] shadow-[0_8px_30px_rgba(49,70,142,0.08)] backdrop-blur-md">
-            Premium Travel Experience
+            {t('pages.landing.features.badge')}
           </div>
 
           <h2 className="text-4xl font-bold leading-tight text-[#31468e] sm:text-5xl lg:text-6xl">
-            Why travelers choose{" "}
+            {t('pages.landing.features.heading').split('GhoomWay')[0]}{" "}
             <span className="relative inline-block text-[#f2ca1c]">
               GhoomWay
               <span className="absolute -bottom-1 left-0 h-[4px] w-full rounded-full bg-[#f2ca1c]/30" />
@@ -65,42 +46,35 @@ const Features = () => {
           </h2>
 
           <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-base">
-            Designed with elegance, flexibility, and trust at its core, GhoomWay
-            delivers a premium booking experience that feels seamless from the
-            first search to the final destination.
+            {t('pages.landing.features.subtext')}
           </p>
         </motion.div>
 
-        {/* Marquee Wrapper */}
+        {/* Features Grid */}
         <div className="group relative">
-          {/* Edge fade */}
-          <div className="pointer-events-none absolute left-0 top-0 z-20 h-full w-20 md:w-32" />
-          <div className="pointer-events-none absolute right-0 top-0 z-20 h-full w-20  md:w-32" />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+            {features.map((item, index) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={index}
+                  className="relative min-h-[280px] rounded-[30px] border border-slate-200 bg-white p-8 shadow-sm transition-transform duration-300 hover:-translate-y-2"
+                >
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#31468e] text-white">
+                    <Icon className="h-7 w-7" />
+                  </div>
 
-         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-  {featureList.map((item, index) => {
-    const Icon = item.icon;
+                  <h3 className="mb-4 text-2xl font-semibold tracking-tight text-[#31468e]">
+                    {t(`pages.landing.features.items.${item.key}.title`, item.title)}
+                  </h3>
 
-    return (
-      <div
-        key={index}
-        className="relative min-h-[280px] rounded-[30px] border border-slate-200 bg-white p-8 shadow-sm transition-transform duration-300 hover:-translate-y-2"
-      >
-        <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#31468e] text-white">
-          <Icon className="h-7 w-7" />
-        </div>
-
-        <h3 className="mb-4 text-2xl font-semibold tracking-tight text-[#31468e]">
-          {item.title}
-        </h3>
-
-        <p className="text-[15px] leading-7 text-slate-600">
-          {item.description}
-        </p>
-      </div>
-    );
-  })}
-</div>
+                  <p className="text-[15px] leading-7 text-slate-600">
+                    {t(`pages.landing.features.items.${item.key}.description`)}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Bottom trust strip */}
@@ -114,7 +88,7 @@ const Features = () => {
           <div className="flex items-center gap-4 text-sm text-slate-500">
             <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#31468e]/20 md:w-28" />
             <span>
-              Trusted travel experiences with elegance, flexibility, and confidence
+              {t('pages.landing.features.trustLine')}
             </span>
             <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#31468e]/20 md:w-28" />
           </div>
@@ -130,4 +104,4 @@ const Features = () => {
   );
 };
 
-export default Features;
+export default Features;

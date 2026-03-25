@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const StatusBadge = ({ status }) => {
+  const { t } = useTranslation();
   const statusStyles = {
     Pending: 'bg-amber-100 text-amber-700 border-amber-200',
     Accepted: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -11,7 +13,7 @@ const StatusBadge = ({ status }) => {
 
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider border ${statusStyles[status] || 'bg-gray-100 text-gray-700 border-gray-200'}`}>
-      {status}
+      {t(`common.status.${status.toLowerCase()}`, status)}
     </span>
   );
 };

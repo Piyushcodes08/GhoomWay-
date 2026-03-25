@@ -1,52 +1,39 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { MapPin, Star, ArrowRight, Compass, Clock, Map as MapIcon, Calendar, CheckCircle2 } from "lucide-react";
 
 import img4 from "../../assets/img4.webp";
 import { destinationsData, popularCities } from "../../constants/data.jsx";
 
-
-// Sample deep itinerary data for the industry-standard feel
-const featuredRoutes = [
-  {
-    id: "route-1",
-    title: "Golden Triangle Tour",
-    duration: "4 Days / 3 Nights",
-    distance: "720 KMS",
-    route: "Delhi → Agra → Jaipur → Delhi",
-    highlights: ["Taj Mahal Sunrise Visit", "Amer Fort Elephant Ride", "Fatehpur Sikri Stop", "Highway Dhabha Experience"],
-    image: destinationsData[0]?.image || "/bg-hero.webp",
-    price: "₹18,500"
-  },
-  {
-    id: "route-2",
-    title: "The Himalayan Escape",
-    duration: "5 Days / 4 Nights",
-    distance: "550 KMS",
-    route: "Chandigarh → Shimla → Manali",
-    highlights: ["Rohtang Pass Snow Drive", "Solang Valley Logistics", "Mall Road Dropoffs", "Hill-Driving Experts"],
-    image: destinationsData[1]?.image || "/bg-hero.webp",
-    price: "₹24,000"
-  },
-  {
-    id: "route-3",
-    title: "Goan Coastal Drive",
-    duration: "3 Days / 2 Nights",
-    distance: "300 KMS",
-    route: "North Goa → South Goa Tour",
-    highlights: ["Beach Hopping Protocol", "Fort Aguada Visit", "Dudhsagar Trek Drop", "Nightlife Secure Pickup"],
-    image: img4,
-    price: "₹12,000"
-  }
-];
-
 export default function DestinationsPage() {
+  const { t } = useTranslation();
+
+  // Dynamically build featuredRoutes from translation data
+  const routeKeys = ['goldenTriangle', 'himalayanEscape', 'goanCoastal'];
+  const routeImages = [
+    destinationsData[0]?.image || "/bg-hero.webp",
+    destinationsData[1]?.image || "/bg-hero.webp",
+    img4
+  ];
+  const routePrices = ["₹18,500", "₹24,000", "₹12,000"];
+
+  const featuredRoutes = routeKeys.map((key, i) => {
+    const data = t(`pages.innerPages.destinations.itineraries.routes.${key}`, { returnObjects: true });
+    return {
+      id: `route-${i + 1}`,
+      ...data,
+      image: routeImages[i],
+      price: routePrices[i]
+    };
+  });
+
   return (
     <div className="bg-slate-50 min-h-screen">
       {/* 1. Impact Hero */}
       <section className="relative h-screen flex items-center justify-start overflow-hidden pt-20">
         <img 
           src="/bg-hero.webp" 
-          alt="Explore India with Ghoomway" 
+          alt={t('pages.innerPages.destinations.hero.heading')} 
           className="absolute inset-0 w-full h-full object-cover scale-105"
           loading="eager"
           fetchPriority="high"
@@ -60,22 +47,22 @@ export default function DestinationsPage() {
             className="max-w-2xl"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold uppercase tracking-wider text-xs mb-6 shadow-xl">
-              <Compass className="w-4 h-4 text-[#f2ca1c]" /> Curated Travel Experiences
+              <Compass className="w-4 h-4 text-[#f2ca1c]" /> {t('pages.innerPages.destinations.hero.badge')}
             </div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
-              Journeys <span className="text-[#f2ca1c]">Crafted</span> For the Soul.
+              {t('pages.innerPages.destinations.hero.heading').split(' ').slice(0, 1).join(' ')} <span className="text-[#f2ca1c]">{t('pages.innerPages.destinations.hero.heading').split(' ').slice(1, 2).join(' ')}</span> {t('pages.innerPages.destinations.hero.heading').split(' ').slice(2).join(' ')}
             </h1>
             <p className="text-xl text-slate-300 font-medium leading-relaxed mb-10">
-              India is not just a place on a map; it's an experience. We provide the wheels, the expertise, and the safety to help you chart your own course.
+              {t('pages.innerPages.destinations.hero.subtext')}
             </p>
             <div className="bg-white/10 backdrop-blur-md p-2 rounded-2xl flex max-w-lg border border-white/20">
               <input 
                 type="text" 
-                placeholder="Where do you want to go?" 
+                placeholder={t('pages.innerPages.destinations.hero.searchPlaceholder')} 
                 className="w-full bg-transparent border-none text-white px-4 focus:outline-none placeholder:text-white/60 font-medium"
               />
               <button className="px-6 py-3 bg-[#f2ca1c] text-slate-900 rounded-xl font-bold hover:bg-white transition-colors whitespace-nowrap">
-                Search Route
+                {t('pages.innerPages.destinations.hero.searchBtn')}
               </button>
             </div>
           </motion.div>
@@ -86,11 +73,11 @@ export default function DestinationsPage() {
       <section className="py-24 md:py-32 px-4 md:px-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 pt-8 border-t border-slate-200">
           <div className="max-w-2xl">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">Signature <span className="text-[#31468e]">Itineraries</span></h2>
-            <p className="text-lg text-slate-600 leading-relaxed">Handpicked road-trip packages combining popular tourist circuits with our elite fleet and expert highway chauffeurs.</p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">{t('pages.innerPages.destinations.itineraries.heading').split(' ')[0]} <span className="text-[#31468e]">{t('pages.innerPages.destinations.itineraries.heading').split(' ').slice(1).join(' ')}</span></h2>
+            <p className="text-lg text-slate-600 leading-relaxed">{t('pages.innerPages.destinations.itineraries.subtext')}</p>
           </div>
           <button className="whitespace-nowrap px-8 py-4 rounded-xl border-2 border-[#31468e] text-[#31468e] font-bold hover:bg-[#31468e] hover:text-white transition-all shadow-lg shadow-[#31468e]/20">
-            Download E-Brochure
+            {t('pages.innerPages.destinations.itineraries.downloadBtn')}
           </button>
         </div>
 
@@ -107,7 +94,7 @@ export default function DestinationsPage() {
               <div className="lg:w-2/5 relative overflow-hidden">
                 <img src={route.image} alt={route.title} className="w-full h-full object-cover min-h-[300px] transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 font-bold shadow-lg text-slate-900">
-                  <Star className="w-4 h-4 text-[#f2ca1c] fill-[#f2ca1c]" /> 4.9 Superb
+                  <Star className="w-4 h-4 text-[#f2ca1c] fill-[#f2ca1c]" /> 4.9 {t('pages.innerPages.destinations.itineraries.rating')}
                 </div>
               </div>
               
@@ -136,12 +123,12 @@ export default function DestinationsPage() {
 
                 <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-slate-100 gap-6">
                   <div>
-                    <p className="text-sm font-bold text-slate-400 uppercase mb-1">Package Starting at</p>
+                    <p className="text-sm font-bold text-slate-400 uppercase mb-1">{t('pages.innerPages.destinations.itineraries.packageStart')}</p>
                     <p className="text-4xl font-black text-slate-900">{route.price}</p>
-                    <p className="text-xs text-slate-500 mt-1">Per Sedan (excluding taxes & tolls)</p>
+                    <p className="text-xs text-slate-500 mt-1">{t('pages.innerPages.destinations.itineraries.perSedan')}</p>
                   </div>
                   <button className="w-full sm:w-auto px-8 py-4 bg-[#f2ca1c] text-slate-900 rounded-xl font-bold hover:bg-black hover:text-[#f2ca1c] transition-colors shadow-lg shadow-[#f2ca1c]/30 flex items-center justify-center gap-2">
-                    Request Quote <ArrowRight className="w-5 h-5" />
+                    {t('pages.innerPages.destinations.itineraries.requestBtn')} <ArrowRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -156,13 +143,13 @@ export default function DestinationsPage() {
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">Nationwide <span className="text-[#f2ca1c]">Coverage</span></h2>
-            <p className="text-xl text-slate-300">We operate an expansive network across the country. If there is a road, we can take you there.</p>
+            <h2 className="text-4xl md:text-5xl font-black mb-6">{t('pages.innerPages.destinations.coverage.heading').split(' ')[0]} <span className="text-[#f2ca1c]">{t('pages.innerPages.destinations.coverage.heading').split(' ').slice(1).join(' ')}</span></h2>
+            <p className="text-xl text-slate-300">{t('pages.innerPages.destinations.coverage.subtext')}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-md">
-              <h3 className="text-2xl font-bold mb-6 border-b border-white/10 pb-4">Major Hubs</h3>
+              <h3 className="text-2xl font-bold mb-6 border-b border-white/10 pb-4">{t('pages.innerPages.destinations.coverage.majorHubs')}</h3>
               <div className="flex flex-wrap gap-3">
                 {popularCities.slice(0, 12).map((city, i) => (
                   <span key={i} className="px-5 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-sm font-medium hover:bg-[#31468e] hover:text-white transition-colors cursor-default border border-slate-700">
@@ -176,12 +163,12 @@ export default function DestinationsPage() {
               <div className="absolute -right-10 -bottom-10 opacity-10">
                 <Compass className="w-64 h-64" />
               </div>
-              <h3 className="text-3xl font-black mb-4 relative z-10 text-white">Need a Custom Itinerary?</h3>
+              <h3 className="text-3xl font-black mb-4 relative z-10 text-white">{t('pages.innerPages.destinations.coverage.custom.title')}</h3>
               <p className="text-blue-100 mb-8 relative z-10 leading-relaxed text-lg">
-                Planning a multi-state tour spanning 15 days? Or a corporate offsite for 200 employees? Our logistics experts design custom routing charts tailored perfectly to your requirements.
+                {t('pages.innerPages.destinations.coverage.custom.desc')}
               </p>
               <button className="relative z-10 px-8 py-4 bg-white text-[#31468e] rounded-xl font-bold hover:bg-[#f2ca1c] hover:text-slate-900 transition-colors shadow-lg">
-                Talk to a Travel Expert
+                {t('pages.innerPages.destinations.coverage.custom.btn')}
               </button>
             </div>
           </div>

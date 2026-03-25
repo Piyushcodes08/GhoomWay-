@@ -1,8 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { X, Smartphone } from "lucide-react";
 
 export default function AppNotice() {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -25,10 +27,10 @@ export default function AppNotice() {
           </div>
           <div className="flex-1 pr-6 relative">
             <h4 className="text-white font-bold text-[13px] mb-1 uppercase tracking-wider flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#f2ca1c] animate-pulse shadow-[0_0_8px_#f2ca1c]" /> Mobile App Coming Soon
+              <span className="w-2 h-2 rounded-full bg-[#f2ca1c] animate-pulse shadow-[0_0_8px_#f2ca1c]" /> {t('common.appNotice.title')}
             </h4>
             <p className="text-slate-300 text-xs leading-relaxed font-medium">
-              Get ready for a seamless premium travel experience right at your fingertips.
+              {t('common.appNotice.subtitle')}
             </p>
           </div>
           <button 

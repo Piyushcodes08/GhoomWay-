@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import {
   Search, RefreshCw, Eye, CheckCircle2, XCircle,
   MapPin, Clock, BarChart3, TrendingUp, X, LogOut,
@@ -23,6 +24,7 @@ const STATUS_DOT = {
 };
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const admin = getStoredUser();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,7 +76,10 @@ export default function AdminDashboard() {
       const data = await updateBookingStatus(booking._id, type, remark);
       if (data.success) {
         setBookings(prev => prev.map(b => b._id === booking._id ? data.data : b));
-        setToast({ message: `Booking ${type.toLowerCase()} successfully!`, type: 'success' });
+        setToast({ 
+          message: t('admin.modals.successMsg', { status: t(`common.status.${type.toLowerCase()}`) }), 
+          type: 'success' 
+        });
       }
     } catch (error) {
       setToast({ message: error.message, type: 'error' });
@@ -124,7 +129,7 @@ export default function AdminDashboard() {
       <header style={styles.topbar}>
         <div style={styles.topbarLeft}>
           <div style={styles.logo}>G</div>
-          <span style={styles.logoText}>GhoomWay <span style={styles.logoBadge}>Admin</span></span>
+          <span style={styles.logoText}>GhoomWay <span style={styles.logoBadge}>{t('admin.dashboard')}</span></span>
         </div>
         <div style={styles.topbarRight}>
           <button
@@ -134,13 +139,13 @@ export default function AdminDashboard() {
             className="admin-btn"
           >
             <RefreshCw size={15} style={{ ...(refreshing ? styles.spin : {}) }} />
-            {refreshing ? 'Refreshing…' : 'Refresh'}
+            {refreshing ? t('admin.refreshing') : t('admin.refresh')}
           </button>
           <div style={styles.adminChip}>
             <div style={styles.adminAvatar}>{admin?.name?.charAt(0) || 'A'}</div>
             <span style={styles.adminName}>{admin?.name || 'Admin'}</span>
           </div>
-          <button onClick={logout} style={styles.logoutBtn} className="admin-btn" title="Sign out">
+          <button onClick={logout} style={styles.logoutBtn} className="admin-btn" title={t('auth.logout')}>
             <LogOut size={16} />
           </button>
         </div>
@@ -152,10 +157,10 @@ export default function AdminDashboard() {
         {/* Page heading */}
         <div style={styles.pageHeading}>
           <div>
-            <h1 style={styles.h1}>Booking Central</h1>
+            <h1 style={styles.h1}>{t('admin.bookingCentral')}</h1>
             <p style={styles.subtext}>
               <TrendingUp size={14} style={{ color: '#10b981', marginRight: 6, flexShrink: 0 }} />
-              Monitoring {bookings.length} total ride operations
+              {t('admin.monitoring', { count: bookings.length })}
             </p>
           </div>
         </div>
@@ -163,10 +168,10 @@ export default function AdminDashboard() {
         {/* ── Stat Cards ── */}
         <div style={styles.statsGrid}>
           {[
-            { label: 'Total Rides', value: stats.total, icon: <Car size={20} />, accent: '#6366f1', bg: 'rgba(99,102,241,0.08)' },
-            { label: 'Pending Review', value: stats.pending, icon: <AlertCircle size={20} />, accent: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
-            { label: 'Confirmed', value: stats.accepted, icon: <CheckCircle2 size={20} />, accent: '#10b981', bg: 'rgba(16,185,129,0.08)' },
-            { label: 'Completed', value: stats.completed, icon: <BarChart3 size={20} />, accent: '#3b82f6', bg: 'rgba(59,130,246,0.08)' },
+            { label: t('admin.stats.total'), value: stats.total, icon: <Car size={20} />, accent: '#6366f1', bg: 'rgba(99,102,241,0.08)' },
+            { label: t('admin.stats.pending'), value: stats.pending, icon: <AlertCircle size={20} />, accent: '#f59e0b', bg: 'rgba(245,158,11,0.08)' },
+            { label: t('admin.stats.confirmed'), value: stats.accepted, icon: <CheckCircle2 size={20} />, accent: '#10b981', bg: 'rgba(16,185,129,0.08)' },
+            { label: t('admin.stats.completed'), value: stats.completed, icon: <BarChart3 size={20} />, accent: '#3b82f6', bg: 'rgba(59,130,246,0.08)' },
           ].map((s, i) => (
             <motion.div
               key={i}
@@ -190,24 +195,24 @@ export default function AdminDashboard() {
         <div style={styles.filterBar}>
           {/* Tab pills */}
           <div style={styles.tabRow}>
-            {TAB_STATUSES.map(t => (
+            {TAB_STATUSES.map(t_id => (
               <button
-                key={t}
-                onClick={() => setStatusFilter(t)}
+                key={t_id}
+                onClick={() => setStatusFilter(t_id)}
                 style={{
                   ...styles.tab,
-                  ...(statusFilter === t ? styles.tabActive : {}),
+                  ...(statusFilter === t_id ? styles.tabActive : {}),
                 }}
                 className="admin-tab"
               >
-                {t !== 'All' && (
+                {t_id !== 'All' && (
                   <span style={{
                     ...styles.tabDot,
-                    background: STATUS_DOT[t] || '#94a3b8',
-                    opacity: statusFilter === t ? 1 : 0.5,
+                    background: STATUS_DOT[t_id] || '#94a3b8',
+                    opacity: statusFilter === t_id ? 1 : 0.5,
                   }} />
                 )}
-                {t}
+                {t(`admin.filters.${t_id.toLowerCase()}`, t_id)}
               </button>
             ))}
           </div>
@@ -217,7 +222,7 @@ export default function AdminDashboard() {
             <Search size={16} style={styles.searchIcon} />
             <input
               type="text"
-              placeholder="Search by ID, name, phone or city…"
+              placeholder={t('admin.filters.searchPlaceholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               style={styles.searchInput}
@@ -234,8 +239,8 @@ export default function AdminDashboard() {
         <div style={styles.resultsMeta}>
           <Filter size={13} style={{ color: '#94a3b8', marginRight: 6 }} />
           <span style={styles.resultsText}>
-            {filteredBookings.length} booking{filteredBookings.length !== 1 ? 's' : ''} found
-            {statusFilter !== 'All' ? ` · ${statusFilter}` : ''}
+            {filteredBookings.length === 1 ? t('admin.table.found', { count: 1 }) : t('admin.table.found_plural', { count: filteredBookings.length })}
+            {statusFilter !== 'All' ? ` · ${t(`admin.filters.${statusFilter.toLowerCase()}`)}` : ''}
           </span>
         </div>
 
@@ -245,12 +250,12 @@ export default function AdminDashboard() {
             <table style={styles.table}>
               <thead>
                 <tr style={styles.thead}>
-                  <th style={styles.th}>Booking ID</th>
-                  <th style={styles.th}>Customer</th>
-                  <th style={styles.th} className="md-hide">Route</th>
-                  <th style={styles.th}>Date & Time</th>
-                  <th style={styles.th} className="sm-hide">Status</th>
-                  <th style={{ ...styles.th, textAlign: 'right' }}>Actions</th>
+                  <th style={styles.th}>{t('admin.table.bookingId')}</th>
+                  <th style={styles.th}>{t('admin.table.customer')}</th>
+                  <th style={styles.th} className="md-hide">{t('admin.table.route')}</th>
+                  <th style={styles.th}>{t('admin.table.dateTime')}</th>
+                  <th style={styles.th} className="sm-hide">{t('admin.table.status')}</th>
+                  <th style={{ ...styles.th, textAlign: 'right' }}>{t('admin.table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -289,7 +294,9 @@ export default function AdminDashboard() {
                           <MapPin size={12} style={{ color: '#10b981', flexShrink: 0 }} />
                           {b.pickupCity}
                         </p>
-                        <p style={styles.routeBadge}>{b.tripCategory} · {b.tripType}</p>
+                        <p style={styles.routeBadge}>
+                          {t(`booking.tabs.${(b.tripCategory || '').toLowerCase().replace(/\s|\//g, '')}`, b.tripCategory)} · {t(`booking.options.${(b.tripType || '').toLowerCase().replace(/\s/g, '')}.title`, b.tripType)}
+                        </p>
                       </td>
 
                       {/* Date & Time */}
@@ -298,7 +305,7 @@ export default function AdminDashboard() {
                           <Clock size={12} style={{ color: '#6366f1', flexShrink: 0 }} />
                           {b.pickupTime}
                         </p>
-                        <p style={styles.schedDate}>{new Date(b.pickupDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                        <p style={styles.schedDate}>{new Date(b.pickupDate).toLocaleDateString(t('common.locale', 'en-IN'), { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                       </td>
 
                       {/* Status – hidden on sm */}
@@ -313,7 +320,7 @@ export default function AdminDashboard() {
                             onClick={() => { setSelectedBooking(b); setDetailModalOpen(true); }}
                             style={styles.actionBtn}
                             className="action-view"
-                            title="View details"
+                            title={t('admin.tooltips.view')}
                           >
                             <Eye size={15} />
                           </button>
@@ -324,7 +331,7 @@ export default function AdminDashboard() {
                                 onClick={() => setConfirmationModal({ open: true, type: 'Accepted', booking: b })}
                                 style={{ ...styles.actionBtn, ...styles.actionAccept }}
                                 className="action-accept"
-                                title="Accept"
+                                title={t('admin.tooltips.accept')}
                               >
                                 <CheckCircle2 size={15} />
                               </button>
@@ -332,7 +339,7 @@ export default function AdminDashboard() {
                                 onClick={() => setConfirmationModal({ open: true, type: 'Rejected', booking: b })}
                                 style={{ ...styles.actionBtn, ...styles.actionReject }}
                                 className="action-reject"
-                                title="Reject"
+                                title={t('admin.tooltips.reject')}
                               >
                                 <XCircle size={15} />
                               </button>
@@ -344,7 +351,7 @@ export default function AdminDashboard() {
                               onClick={() => setConfirmationModal({ open: true, type: 'Completed', booking: b })}
                               style={{ ...styles.actionBtn, ...styles.actionComplete }}
                               className="action-complete"
-                              title="Mark completed"
+                              title={t('admin.tooltips.complete')}
                             >
                               <CheckCircle2 size={15} />
                             </button>
@@ -362,8 +369,8 @@ export default function AdminDashboard() {
           {filteredBookings.length === 0 && !loading && (
             <div style={styles.emptyState}>
               <div style={styles.emptyIcon}><BarChart3 size={36} /></div>
-              <p style={styles.emptyTitle}>No bookings found</p>
-              <p style={styles.emptySubtitle}>Try adjusting your filters or search terms.</p>
+              <p style={styles.emptyTitle}>{t('admin.table.noResults')}</p>
+              <p style={styles.emptySubtitle}>{t('admin.table.noResultsSub')}</p>
             </div>
           )}
         </div>
@@ -374,9 +381,9 @@ export default function AdminDashboard() {
         isOpen={confirmationModal.open}
         onClose={() => setConfirmationModal({ open: false, type: 'Accepted', booking: null })}
         onConfirm={handleStatusUpdate}
-        title={`${confirmationModal.type} Booking`}
-        message={`Confirming this action will update the booking status to ${confirmationModal.type}.`}
-        confirmText={`Confirm ${confirmationModal.type}`}
+        title={t('admin.modals.confirmTitle', { status: t(`common.status.${confirmationModal.type.toLowerCase()}`) })}
+        message={t('admin.modals.confirmMsg', { status: t(`common.status.${confirmationModal.type.toLowerCase()}`) })}
+        confirmText={t('admin.modals.confirmBtn', { status: t(`common.status.${confirmationModal.type.toLowerCase()}`) })}
         type={confirmationModal.type === 'Rejected' ? 'danger' : 'primary'}
         loading={refreshing}
       />

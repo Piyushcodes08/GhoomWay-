@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { LogIn, Mail, Lock, AlertCircle, Loader2 } from 'lucide-react';
 import { login } from '../services/authService';
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export default function LoginPage() {
       await login(email, password);
       navigate('/admin/dashboard');
     } catch (err) {
-      setError(err.message || 'Invalid email or password');
+      setError(err.message || t('auth.invalid'));
     } finally {
       setLoading(false);
     }
@@ -39,13 +41,13 @@ export default function LoginPage() {
               <div className="w-16 h-16 bg-[#31468e] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-200">
                 <LogIn className="text-white" size={32} />
               </div>
-              <h1 className="text-3xl font-black text-slate-900 tracking-tight">Admin Portal</h1>
-              <p className="text-slate-400 font-bold mt-2">Sign in to manage GhoomWay operations</p>
+              <h1 className="text-3xl font-black text-slate-900 tracking-tight">{t('auth.portalTitle')}</h1>
+              <p className="text-slate-400 font-bold mt-2">{t('auth.portalSub')}</p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Email Address</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('auth.emailLabel')}</label>
                 <div className="relative group">
                   <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#31468e] transition-colors" size={20} />
                   <input
@@ -60,7 +62,7 @@ export default function LoginPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Security Key</label>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">{t('auth.passLabel')}</label>
                 <div className="relative group">
                   <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-[#31468e] transition-colors" size={20} />
                   <input
@@ -91,14 +93,14 @@ export default function LoginPage() {
                 className="w-full bg-[#31468e] hover:bg-[#253675] text-white font-black py-4 rounded-2xl shadow-xl shadow-blue-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
               >
                 {loading ? <Loader2 className="animate-spin" size={20} /> : <LogIn size={20} />}
-                {loading ? 'Authenticating...' : 'Enter Dashboard'}
+                {loading ? t('auth.loggingIn') : t('auth.loginBtn')}
               </button>
             </form>
           </div>
         </div>
         
         <p className="text-center text-slate-400 text-xs font-bold mt-8">
-          © {new Date().getFullYear()} GhoomWay Technologies Ltd.
+          {t('auth.copyright', { year: new Date().getFullYear() })}
         </p>
       </motion.div>
     </div>
