@@ -1,10 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { X, Smartphone } from "lucide-react";
 
 export default function AppNotice() {
-  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -20,17 +18,17 @@ export default function AppNotice() {
           initial={{ opacity: 0, y: 50, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 50, scale: 0.9 }}
-          className="fixed bottom-6 right-6 z-[100] max-w-sm w-[calc(100%-48px)] bg-slate-900/90 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-2xl flex items-start gap-4"
+          className="fixed bottom-0 right-0 md:bottom-6 md:right-6 z-[100] max-w-[280px] md:max-w-sm w-full sm:w-[calc(100%-32px)] bg-slate-900/95 backdrop-blur-md border-t sm:border border-white/10 p-4 rounded-none sm:rounded-2xl shadow-2xl flex items-start gap-4"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#31468e] to-[#20316b] flex items-center justify-center shrink-0 shadow-inner border border-blue-400/20">
+          <div className="w-10 h-10 rounded-none sm:rounded-xl bg-gradient-to-br from-[#31468e] to-[#20316b] flex items-center justify-center shrink-0 shadow-inner border border-blue-400/20">
             <Smartphone className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1 pr-6 relative">
             <h4 className="text-white font-bold text-[13px] mb-1 uppercase tracking-wider flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#f2ca1c] animate-pulse shadow-[0_0_8px_#f2ca1c]" /> {t('common.appNotice.title')}
+              <span className="w-2 h-2 rounded-full bg-[#f2ca1c] animate-pulse shadow-[0_0_8px_#f2ca1c]" /> Coming Soon: Ghoomway App!
             </h4>
             <p className="text-slate-300 text-xs leading-relaxed font-medium">
-              {t('common.appNotice.subtitle')}
+              We're building something amazing! Soon you'll be able to book, track, and manage all your trips from your phone.
             </p>
           </div>
           <button 

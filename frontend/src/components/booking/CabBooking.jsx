@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import {
   MapPin,
   Smartphone,
@@ -19,7 +18,6 @@ import { bookingTabs as tabs, outstationOptions, localOptions } from "../../cons
 import { createBooking as apiCreateBooking } from "../../services/bookingService";
 
 export default function CabBooking() {
-  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("Outstation");
   const [tripType, setTripType] = useState("Round Trip");
   const [isLoading, setIsLoading] = useState(false);
@@ -92,7 +90,7 @@ export default function CabBooking() {
 
     // Frontend validation
     if (formData.phoneNumber.replace(/\D/g, "").length !== 10) {
-      setErrorStatus(t('booking.form.phoneError'));
+      setErrorStatus("Please enter a valid 10-digit mobile number.");
       setIsLoading(false);
       return;
     }
@@ -134,7 +132,7 @@ export default function CabBooking() {
       }
     } catch (error) {
       console.error('[Booking Submit Error]', error);
-      setErrorStatus(error.message || t('booking.form.serverError'));
+      setErrorStatus(error.message || "Server is unavailable. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -159,7 +157,7 @@ export default function CabBooking() {
   };
 
   return (
-    <div className="relative w-full max-w-6xl overflow-visible rounded-none sm:rounded-[32px] border-y sm:border-x border-slate-200 bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-6 md:p-8">
+    <div className="relative w-full max-w-6xl overflow-visible rounded-none sm:rounded-[32px] border-y sm:border-x border-slate-200 bg-white px-4 py-6 sm:p-6 md:p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
       
       {/* SUCCESS MODAL */}
       <AnimatePresence>
@@ -180,15 +178,15 @@ export default function CabBooking() {
               <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 className="w-10 h-10 text-emerald-600" />
               </div>
-              <h3 className="text-2xl font-black text-slate-900 mb-4">{t('booking.success.title')}</h3>
+              <h3 className="text-2xl font-black text-slate-900 mb-4">Request Received!</h3>
               <p className="text-slate-600 font-medium leading-relaxed mb-8 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                {t('booking.success.message')}
+                Please wait 5 minutes. Your trip details will be sent to your WhatsApp. There you can review the details and accept the trip according to your budget.
               </p>
               <button 
                 onClick={closeSuccessModal}
                 className="w-full bg-[#31468e] text-white font-bold py-4 rounded-xl hover:bg-[#20316b] transition-colors"
               >
-                {t('booking.success.btn')}
+                Got It!
               </button>
             </motion.div>
           </motion.div>
@@ -200,10 +198,10 @@ export default function CabBooking() {
         <div className="mb-6 rounded-[24px] border border-[#31468e]/10 bg-gradient-to-r from-[#31468e] via-[#3d56aa] to-[#31468e] p-[1px] shadow-[0_10px_28px_rgba(49,70,142,0.16)]">
           <div className="rounded-[23px] bg-[linear-gradient(135deg,#31468e_0%,#3d56aa_100%)] px-5 py-5 text-center text-white">
             <p className="mb-1 text-[10px] sm:text-xs font-semibold uppercase tracking-[0.25em] text-white/75">
-              {t('booking.premiumRibbon')}
+              Premium Cab Booking
             </p>
             <h2 className="text-xl font-black sm:text-2xl lg:text-3xl tracking-tight">
-              {t('booking.allIndia')}
+              All India Cab Services
             </h2>
           </div>
         </div>
@@ -213,19 +211,18 @@ export default function CabBooking() {
           <div className="grid grid-cols-2 gap-2">
             {tabs.map((tab) => {
               const isActive = activeTab === tab;
-              const tabKey = tab.toLowerCase().split(' / ')[0]; // 'outstation' or 'local'
               return (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
-                  className={`relative overflow-hidden rounded-xl px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base ${
+                  className={`relative overflow-hidden rounded-none sm:rounded-xl px-4 py-3 text-sm font-bold transition-all duration-300 sm:text-base ${
                     isActive
                       ? "bg-[#31468e] text-white shadow-[0_8px_20px_rgba(49,70,142,0.20)]"
                       : "text-slate-600 hover:bg-white hover:text-[#31468e]"
                   }`}
                 >
-                  {t(`booking.tabs.${tabKey}`, tab)}
+                  {tab}
                 </button>
               );
             })}
@@ -236,13 +233,12 @@ export default function CabBooking() {
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
           {currentOptions.map((type) => {
             const isSelected = tripType === type.title;
-            const optionKey = type.title.toLowerCase().replace(/\s+/g, '');
             return (
               <button
                 key={type.title}
                 type="button"
                 onClick={() => setTripType(type.title)}
-                className={`group relative overflow-hidden rounded-[24px] border p-5 text-left transition-all duration-300 ${
+                className={`group relative overflow-hidden rounded-none sm:rounded-[24px] border p-5 text-left transition-all duration-300 ${
                   isSelected
                     ? "border-[#31468e]/20 bg-gradient-to-br from-[#31468e] to-[#425cb8] text-white shadow-[0_14px_28px_rgba(49,70,142,0.18)]"
                     : "border-slate-200 bg-white text-slate-800 hover:border-[#31468e]/30 hover:shadow-[0_10px_24px_rgba(15,23,42,0.05)]"
@@ -260,13 +256,13 @@ export default function CabBooking() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="mb-1 flex items-center justify-between gap-3">
-                      <h3 className="text-base font-bold sm:text-lg truncate">{t(`booking.options.${optionKey}.title`, type.title)}</h3>
+                      <h3 className="text-base font-bold sm:text-lg truncate">{type.title}</h3>
                       <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 ${isSelected ? "border-white bg-white" : "border-slate-300 bg-transparent"}`}>
                         {isSelected && <div className="h-2.5 w-2.5 rounded-full bg-[#31468e]" />}
                       </div>
                     </div>
                     <p className={`text-xs sm:text-sm leading-relaxed ${isSelected ? "text-white/80" : "text-slate-500"}`}>
-                      {t(`booking.options.${optionKey}.subtitle`, type.subtitle)}
+                      {type.subtitle}
                     </p>
                   </div>
                 </div>
@@ -290,8 +286,8 @@ export default function CabBooking() {
             >
               
               {/* Pickup Location */}
-              <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.pickupCity')}</label>
+              <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Pick-up City</label>
                 <div className="flex items-center text-slate-700">
                   <MapPin size={18} className="mr-2 text-[#31468e] shrink-0" />
                   <input
@@ -300,7 +296,7 @@ export default function CabBooking() {
                     value={formData.pickupCity}
                     onChange={handleInputChange}
                     required
-                    placeholder={t('booking.form.pickupCityPlaceholder')}
+                    placeholder="Enter City or Airport"
                     className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400 font-bold"
                   />
                 </div>
@@ -308,8 +304,8 @@ export default function CabBooking() {
 
               {/* Drop Location */}
               {tripType !== "Local Rental" && (
-                <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                  <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.dropCity')}</label>
+                <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                  <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Drop City</label>
                   <div className="flex items-center text-slate-700">
                     <Navigation size={18} className="mr-2 text-[#31468e] shrink-0" />
                     <input
@@ -318,7 +314,7 @@ export default function CabBooking() {
                       value={formData.dropCity}
                       onChange={handleInputChange}
                       required
-                      placeholder={tripType === "Airport Transfer" ? t('booking.form.dropCityPlaceholderAirport') : t('booking.form.dropCityPlaceholderCity')}
+                      placeholder={tripType === "Airport Transfer" ? "Enter Hotel / Drop Area" : "Enter Destination City"}
                       className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400 font-bold"
                     />
                   </div>
@@ -327,14 +323,14 @@ export default function CabBooking() {
 
               {/* Package / Hours */}
               {tripType === "Local Rental" && (
-                <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                  <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.rentalPackage')}</label>
+                <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                  <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Rental Package</label>
                   <div className="relative flex items-center text-slate-700">
                     <Clock size={18} className="mr-2 text-[#31468e] shrink-0" />
                     <select name="rentalPackage" value={formData.rentalPackage} onChange={handleInputChange} className="w-full bg-transparent text-sm outline-none font-bold cursor-pointer appearance-none">
-                      <option value="8 Hrs | 80 Kms">{t('booking.packages.8hrs')}</option>
-                      <option value="12 Hrs | 120 Kms">{t('booking.packages.12hrs')}</option>
-                      <option value="24 Hrs | Unlimited">{t('booking.packages.24hrs')}</option>
+                      <option value="8 Hrs | 80 Kms">8 Hrs | 80 Kms</option>
+                      <option value="12 Hrs | 120 Kms">12 Hrs | 120 Kms</option>
+                      <option value="24 Hrs | Unlimited">24 Hrs | Unlimited</option>
                     </select>
                     <ChevronDown size={14} className="absolute right-0 text-slate-400 pointer-events-none" />
                   </div>
@@ -342,8 +338,8 @@ export default function CabBooking() {
               )}
 
               {/* Pickup Date */}
-              <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.pickupDate')}</label>
+              <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Pick-up Date</label>
                 <div className="flex items-center text-slate-700 relative">
                   <Calendar size={18} className="mr-2 text-[#31468e] shrink-0" />
                   <input
@@ -359,8 +355,8 @@ export default function CabBooking() {
 
               {/* Return Date */}
               {tripType === "Round Trip" && (
-                <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                  <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.returnDate')}</label>
+                <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                  <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Return Date</label>
                   <div className="flex items-center text-slate-700 relative">
                     <Calendar size={18} className="mr-2 text-[#31468e] shrink-0" />
                     <input
@@ -376,8 +372,8 @@ export default function CabBooking() {
               )}
 
               {/* Pickup Time — custom AM/PM picker */}
-              <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.pickupTime')}</label>
+              <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Pick-up Time</label>
                 <div className="flex items-center gap-1.5 text-slate-700">
                   <Clock size={18} className="text-[#31468e] shrink-0" />
 
@@ -409,7 +405,7 @@ export default function CabBooking() {
                   </select>
 
                   {/* AM / PM Toggle */}
-                  <div className="ml-auto flex rounded-lg overflow-hidden border border-slate-200">
+                  <div className="ml-auto flex rounded-none sm:rounded-lg overflow-hidden border border-slate-200">
                     {['AM','PM'].map(p => (
                       <button
                         key={p}
@@ -429,39 +425,39 @@ export default function CabBooking() {
               </div>
 
               {/* Car Type */}
-              <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.cabCategory')}</label>
+              <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Cab Category</label>
                 <div className="relative flex items-center text-slate-700">
                   <Car size={18} className="mr-2 text-[#31468e] shrink-0" />
                   <select name="cabCategory" value={formData.cabCategory} onChange={handleInputChange} className="w-full bg-transparent text-sm outline-none font-bold cursor-pointer appearance-none">
-                    <option value="Hatchback (Mini) - 4 Seater">{t('booking.categories.hatchback')}</option>
-                    <option value="Sedan (Dzire/Etios) - 4 Seater">{t('booking.categories.sedan')}</option>
-                    <option value="SUV (Ertiga/Innova) - 6 Seater">{t('booking.categories.suv')}</option>
-                    <option value="Premium SUV (Innova Crysta) - 7 Seater">{t('booking.categories.premiumsuv')}</option>
-                    <option value="Tempo Traveller - 12+ Seater">{t('booking.categories.tempotraveller')}</option>
+                    <option value="Hatchback (Mini) - 4 Seater">Hatchback (Mini) - 4 Seater</option>
+                    <option value="Sedan (Dzire/Etios) - 4 Seater">Sedan (Dzire/Etios) - 4 Seater</option>
+                    <option value="SUV (Ertiga/Innova) - 6 Seater">SUV (Ertiga/Innova) - 6 Seater</option>
+                    <option value="Premium SUV (Innova Crysta) - 7 Seater">Premium SUV (Innova Crysta) - 7 Seater</option>
+                    <option value="Tempo Traveller - 12+ Seater">Tempo Traveller - 12+ Seater</option>
                   </select>
                   <ChevronDown size={14} className="absolute right-0 text-slate-400 pointer-events-none" />
                 </div>
               </div>
 
               {/* Passengers */}
-              <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.passengers')}</label>
+              <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Passengers</label>
                 <div className="relative flex items-center text-slate-700">
                   <Users size={18} className="mr-2 text-[#31468e] shrink-0" />
                   <select name="passengers" value={formData.passengers} onChange={handleInputChange} className="w-full bg-transparent text-sm outline-none font-bold cursor-pointer appearance-none">
-                    <option value="1-4 Persons">{t('booking.passengersCount.1-4')}</option>
-                    <option value="5-6 Persons">{t('booking.passengersCount.5-6')}</option>
-                    <option value="7-9 Persons">{t('booking.passengersCount.7-9')}</option>
-                    <option value="10+ Persons">{t('booking.passengersCount.10+')}</option>
+                    <option value="1-4 Persons">1-4 Persons</option>
+                    <option value="5-6 Persons">5-6 Persons</option>
+                    <option value="7-9 Persons">7-9 Persons</option>
+                    <option value="10+ Persons">10+ Persons</option>
                   </select>
                   <ChevronDown size={14} className="absolute right-0 text-slate-400 pointer-events-none" />
                 </div>
               </div>
 
               {/* Full Name */}
-              <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.name')}</label>
+              <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Your Name</label>
                 <div className="flex items-center text-slate-700">
                   <User size={18} className="mr-2 text-[#31468e] shrink-0" />
                   <input
@@ -470,15 +466,15 @@ export default function CabBooking() {
                     value={formData.customerName}
                     onChange={handleInputChange}
                     required
-                    placeholder={t('booking.form.namePlaceholder')}
+                    placeholder="John Doe"
                     className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400 font-bold"
                   />
                 </div>
               </div>
 
               {/* Mobile Number */}
-              <div className="rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
-                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">{t('booking.form.mobile')}</label>
+              <div className="rounded-none sm:rounded-[1.25rem] border border-slate-200 bg-slate-50/50 p-3 shadow-sm transition-all focus-within:border-[#31468e]/50 focus-within:bg-white focus-within:ring-4 focus-within:ring-[#31468e]/5">
+                <label className="mb-1.5 ml-1 block text-[10px] font-black uppercase tracking-widest text-slate-500">Mobile No.</label>
                 <div className="flex items-center text-slate-700">
                   <Smartphone size={18} className="mr-2 text-[#31468e] shrink-0" />
                   <span className="text-sm font-bold border-r border-slate-300 pr-2 mr-2">+91</span>
@@ -488,7 +484,7 @@ export default function CabBooking() {
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
                     required
-                    placeholder={t('booking.form.mobilePlaceholder')}
+                    placeholder="98765 43210"
                     className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400 font-bold"
                   />
                 </div>
@@ -511,17 +507,17 @@ export default function CabBooking() {
           <button
             type="submit"
             disabled={isLoading}
-            className="group relative w-full overflow-hidden rounded-[1.5rem] bg-[linear-gradient(135deg,#31468e_0%,#3f58b2_60%,#31468e_100%)] px-6 py-5 text-base font-black tracking-wide text-white shadow-[0_14px_30px_rgba(49,70,142,0.20)] transition-all sm:text-lg mt-4 hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed"
+            className="group relative w-full overflow-hidden rounded-none sm:rounded-[1.5rem] bg-[linear-gradient(135deg,#31468e_0%,#3f58b2_60%,#31468e_100%)] px-6 py-5 text-base font-black tracking-wide text-white shadow-[0_14px_30px_rgba(49,70,142,0.20)] transition-all sm:text-lg mt-4 hover:opacity-95 disabled:opacity-70 disabled:cursor-not-allowed"
           >
 
             <span className="relative z-10 flex items-center justify-center gap-3">
               {isLoading ? (
                 <>
                   <Loader2 className="animate-spin w-5 h-5 text-[#f2ca1c]" /> 
-                  {t('booking.form.submitting')}
+                  CONFIRMING BOOKING...
                 </>
               ) : (
-                t('booking.form.submit')
+                "REQUEST SECURE BOOKING"
               )}
             </span>
           </button>

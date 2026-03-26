@@ -12,7 +12,7 @@ const Gallery = lazy(() => import("./Gallery"));
 const ContactPartner = lazy(() => import("./ContactPartner"));
 
 const SectionFallback = () => (
-  <div className="max-w-7xl mx-auto px-4 py-12">
+  <div className="max-w-7xl mx-auto px-[15px] py-[50px]">
     <Skeleton className="h-[400px] w-full rounded-[32px]" />
   </div>
 );

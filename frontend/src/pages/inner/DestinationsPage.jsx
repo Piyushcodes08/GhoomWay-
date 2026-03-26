@@ -1,119 +1,154 @@
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
-import { MapPin, Star, ArrowRight, Compass, Clock, Map as MapIcon, Calendar, CheckCircle2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MapPin, Clock, ArrowRight, Star, CheckCircle2, Compass, Navigation } from "lucide-react";
+import { popularCities } from "../../constants/data.jsx";
 
+import img1 from "../../assets/img1.webp";
+import img2 from "../../assets/img2.webp";
+import img3 from "../../assets/img3.webp";
 import img4 from "../../assets/img4.webp";
-import { destinationsData, popularCities } from "../../constants/data.jsx";
+
+const featuredRoutes = [
+  {
+    id: 1,
+    title: "The Royal Rajasthan Circuit",
+    route: "Jaipur → Jodhpur → Udaipur",
+    duration: "7 Days / 6 Nights",
+    distance: "1,200 km",
+    image: img1,
+    price: "₹24,999",
+    highlights: ["Fort & Palace Tours", "Desert Safari", "Lake Pichola Boating"]
+  },
+  {
+    id: 2,
+    title: "Spiritual North India",
+    route: "Delhi → Haridwar → Rishikesh",
+    duration: "4 Days / 3 Nights",
+    distance: "550 km",
+    image: img2,
+    price: "₹12,499",
+    highlights: ["Ganga Aarti", "Yoga Sessions", "Mountain Viewpoint"]
+  },
+  {
+    id: 3,
+    title: "Konkan Coastal Drive",
+    route: "Mumbai → Alibaug → Goa",
+    duration: "5 Days / 4 Nights",
+    distance: "600 km",
+    image: img4,
+    price: "₹18,999",
+    highlights: ["Beach Hopping", "Seafood Trail", "Fort Aguada Visit"]
+  }
+];
 
 export default function DestinationsPage() {
-  const { t } = useTranslation();
-
-  // Dynamically build featuredRoutes from translation data
-  const routeKeys = ['goldenTriangle', 'himalayanEscape', 'goanCoastal'];
-  const routeImages = [
-    destinationsData[0]?.image || "/bg-hero.webp",
-    destinationsData[1]?.image || "/bg-hero.webp",
-    img4
-  ];
-  const routePrices = ["₹18,500", "₹24,000", "₹12,000"];
-
-  const featuredRoutes = routeKeys.map((key, i) => {
-    const data = t(`pages.innerPages.destinations.itineraries.routes.${key}`, { returnObjects: true });
-    return {
-      id: `route-${i + 1}`,
-      ...data,
-      image: routeImages[i],
-      price: routePrices[i]
-    };
-  });
-
   return (
     <div className="bg-slate-50 min-h-screen">
-      {/* 1. Impact Hero */}
+
+      {/* 1. Cinematic Hero */}
       <section className="relative h-screen flex items-center justify-start overflow-hidden pt-20">
-        <img 
-          src="/bg-hero.webp" 
-          alt={t('pages.innerPages.destinations.hero.heading')} 
-          className="absolute inset-0 w-full h-full object-cover scale-105"
+        <img
+          src="/bg-hero.webp"
+          alt="Ghoomway Premium Journey"
+          className="absolute inset-0 w-full h-full object-cover"
           loading="eager"
           fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-900/70 to-transparent" />
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-[15px] sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
             className="max-w-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold uppercase tracking-wider text-xs mb-6 shadow-xl">
-              <Compass className="w-4 h-4 text-[#f2ca1c]" /> {t('pages.innerPages.destinations.hero.badge')}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#f2ca1c] font-black uppercase tracking-[0.2em] text-[10px] mb-6 backdrop-blur-md">
+              <Navigation className="w-4 h-4" /> Curated Travel Experiences
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
-              {t('pages.innerPages.destinations.hero.heading').split(' ').slice(0, 1).join(' ')} <span className="text-[#f2ca1c]">{t('pages.innerPages.destinations.hero.heading').split(' ').slice(1, 2).join(' ')}</span> {t('pages.innerPages.destinations.hero.heading').split(' ').slice(2).join(' ')}
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
+              Journeys <span className="text-[#f2ca1c]">Crafted</span> For the Soul.
             </h1>
-            <p className="text-xl text-slate-300 font-medium leading-relaxed mb-10">
-              {t('pages.innerPages.destinations.hero.subtext')}
+            <p className="text-xl text-slate-200 font-medium leading-relaxed mb-10 max-w-xl">
+              India is not just a place on a map; it's an experience. We provide the wheels, the expertise, and the safety to help you chart your own course.
             </p>
-            <div className="bg-white/10 backdrop-blur-md p-2 rounded-2xl flex max-w-lg border border-white/20">
-              <input 
-                type="text" 
-                placeholder={t('pages.innerPages.destinations.hero.searchPlaceholder')} 
+            <div className="bg-white/10 backdrop-blur-md p-2 rounded-none sm:rounded-2xl flex max-w-lg border border-white/20 shadow-2xl">
+              <input
+                type="text"
+                placeholder="Where do you want to go?"
                 className="w-full bg-transparent border-none text-white px-4 focus:outline-none placeholder:text-white/60 font-medium"
               />
-              <button className="px-6 py-3 bg-[#f2ca1c] text-slate-900 rounded-xl font-bold hover:bg-white transition-colors whitespace-nowrap">
-                {t('pages.innerPages.destinations.hero.searchBtn')}
+              <button className="px-8 py-3 bg-[#f2ca1c] text-slate-900 rounded-none sm:rounded-xl font-black hover:bg-white transition-all whitespace-nowrap shadow-lg">
+                Search Route
               </button>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 2. Featured Deep Itineraries */}
-      <section className="py-24 md:py-32 px-4 md:px-6 max-w-7xl mx-auto">
+      {/* 2. Signature Itineraries */}
+      <section className="py-[50px] md:py-32 px-[15px] md:px-6 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 pt-8 border-t border-slate-200">
           <div className="max-w-2xl">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">{t('pages.innerPages.destinations.itineraries.heading').split(' ')[0]} <span className="text-[#31468e]">{t('pages.innerPages.destinations.itineraries.heading').split(' ').slice(1).join(' ')}</span></h2>
-            <p className="text-lg text-slate-600 leading-relaxed">{t('pages.innerPages.destinations.itineraries.subtext')}</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 mb-4 tracking-tight">
+              Signature <span className="text-[#31468e]">Itineraries</span>
+            </h2>
+            <p className="text-lg text-slate-600 leading-relaxed font-medium">
+              Handpicked road-trip packages combining popular tourist circuits with our elite fleet and expert highway chauffeurs.
+            </p>
           </div>
-          <button className="whitespace-nowrap px-8 py-4 rounded-xl border-2 border-[#31468e] text-[#31468e] font-bold hover:bg-[#31468e] hover:text-white transition-all shadow-lg shadow-[#31468e]/20">
-            {t('pages.innerPages.destinations.itineraries.downloadBtn')}
-          </button>
+          <Link
+            to="/contact"
+            className="whitespace-nowrap px-8 py-4 rounded-none sm:rounded-2xl border-2 border-[#31468e] text-[#31468e] font-black hover:bg-[#31468e] hover:text-white transition-all shadow-xl shadow-[#31468e]/10"
+          >
+            Download E-Brochure
+          </Link>
         </div>
 
         <div className="space-y-12">
           {featuredRoutes.map((route, i) => (
-            <motion.div 
+            <motion.div
               key={route.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-2xl shadow-slate-200/50 flex flex-col lg:flex-row group"
+              className="group relative overflow-hidden rounded-none sm:rounded-[2.5rem] shadow-2xl shadow-slate-200 border border-slate-100 bg-white flex flex-col h-full lg:flex-row"
             >
-              <div className="lg:w-2/5 relative overflow-hidden">
-                <img src={route.image} alt={route.title} className="w-full h-full object-cover min-h-[300px] transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 font-bold shadow-lg text-slate-900">
-                  <Star className="w-4 h-4 text-[#f2ca1c] fill-[#f2ca1c]" /> 4.9 {t('pages.innerPages.destinations.itineraries.rating')}
+              <div className="lg:w-2/5 relative overflow-hidden h-[350px] lg:h-auto">
+                <img
+                  src={route.image}
+                  alt={route.title}
+                  className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                />
+                <div className="absolute top-8 left-8 bg-white/90 backdrop-blur-md px-5 py-2.5 rounded-full flex items-center gap-2 font-black shadow-xl text-slate-900 text-sm">
+                  <Star className="w-4 h-4 text-[#f2ca1c] fill-[#f2ca1c]" /> 4.9 Superb
                 </div>
               </div>
-              
-              <div className="lg:w-3/5 p-8 md:p-12 flex flex-col justify-between">
+
+              <div className="lg:w-3/5 p-8 md:p-14 flex flex-col justify-between bg-white">
                 <div>
-                  <div className="flex flex-wrap items-center gap-4 text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">
-                    <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {route.duration}</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                    <span className="flex items-center gap-1.5"><MapIcon className="w-4 h-4" /> {route.distance}</span>
+                  <div className="flex flex-wrap items-center gap-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg">
+                      <Clock className="w-3.5 h-3.5" /> {route.duration}
+                    </span>
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 rounded-lg">
+                      <MapPin className="w-3.5 h-3.5" /> {route.distance}
+                    </span>
                   </div>
-                  
-                  <h3 className="text-3xl font-black text-slate-900 mb-2">{route.title}</h3>
-                  <p className="text-[#31468e] font-bold mb-6 flex items-center gap-2">
-                    <MapPin className="w-5 h-5" /> {route.route}
+
+                  <h3 className="text-2xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight">
+                    {route.title}
+                  </h3>
+                  <p className="text-[#31468e] font-black mb-8 flex items-center gap-2 text-lg">
+                    <MapPin className="w-6 h-6 shrink-0" /> {route.route}
                   </p>
-                  
-                  <div className="grid sm:grid-cols-2 gap-3 mb-8">
+
+                  <div className="grid sm:grid-cols-2 gap-4 mb-10">
                     {route.highlights.map((hlt, idx) => (
-                      <div key={idx} className="flex items-center gap-2 text-slate-600 font-medium">
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 text-slate-600 font-bold bg-slate-50/50 p-3 rounded-none sm:rounded-xl border border-slate-100/50"
+                      >
                         <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                         {hlt}
                       </div>
@@ -121,15 +156,18 @@ export default function DestinationsPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-slate-100 gap-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between pt-10 border-t border-slate-100 gap-8">
                   <div>
-                    <p className="text-sm font-bold text-slate-400 uppercase mb-1">{t('pages.innerPages.destinations.itineraries.packageStart')}</p>
-                    <p className="text-4xl font-black text-slate-900">{route.price}</p>
-                    <p className="text-xs text-slate-500 mt-1">{t('pages.innerPages.destinations.itineraries.perSedan')}</p>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Package Starting at</p>
+                    <p className="text-4xl font-black text-slate-900 tracking-tighter">{route.price}</p>
+                    <p className="text-[10px] text-slate-500 font-bold mt-1 uppercase">Per Sedan (excl. taxes &amp; tolls)</p>
                   </div>
-                  <button className="w-full sm:w-auto px-8 py-4 bg-[#f2ca1c] text-slate-900 rounded-xl font-bold hover:bg-black hover:text-[#f2ca1c] transition-colors shadow-lg shadow-[#f2ca1c]/30 flex items-center justify-center gap-2">
-                    {t('pages.innerPages.destinations.itineraries.requestBtn')} <ArrowRight className="w-5 h-5" />
-                  </button>
+                  <Link
+                    to="/contact"
+                    className="w-full sm:w-auto px-10 py-5 bg-[#f2ca1c] text-slate-900 rounded-none sm:rounded-2xl font-black hover:bg-slate-900 hover:text-white transition-all shadow-xl shadow-[#f2ca1c]/30 flex items-center justify-center gap-3 text-lg"
+                  >
+                    Request Quote <ArrowRight className="w-6 h-6" />
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -137,41 +175,89 @@ export default function DestinationsPage() {
         </div>
       </section>
 
-      {/* 3. Comprehensive Coverage */}
-      <section className="py-24 bg-slate-900 text-white overflow-hidden relative">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-[500px] bg-[#31468e]/20 rounded-full blur-[120px]" />
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-4xl md:text-5xl font-black mb-6">{t('pages.innerPages.destinations.coverage.heading').split(' ')[0]} <span className="text-[#f2ca1c]">{t('pages.innerPages.destinations.coverage.heading').split(' ').slice(1).join(' ')}</span></h2>
-            <p className="text-xl text-slate-300">{t('pages.innerPages.destinations.coverage.subtext')}</p>
+      {/* 3. Nationwide Coverage */}
+      <section className="py-[50px] md:py-32 bg-slate-900 text-white overflow-hidden relative">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-6xl h-[600px] bg-[#31468e]/30 rounded-full blur-[150px] pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-[15px] sm:px-6 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black mb-6 tracking-tight">
+              Nationwide <span className="text-[#f2ca1c]">Coverage</span>
+            </h2>
+            <p className="text-xl text-slate-300 font-medium">
+              We operate an expansive network across the country. If there is a road, we can take you there.
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-md">
-              <h3 className="text-2xl font-bold mb-6 border-b border-white/10 pb-4">{t('pages.innerPages.destinations.coverage.majorHubs')}</h3>
+          <div className="grid lg:grid-cols-2 gap-10">
+            <div className="bg-white/5 border border-white/10 rounded-none sm:rounded-[3rem] p-10 md:p-14 backdrop-blur-md shadow-2xl">
+              <h3 className="text-2xl font-black mb-8 border-b border-white/10 pb-6 tracking-tight uppercase text-[#f2ca1c]">
+                Major Operational Hubs
+              </h3>
               <div className="flex flex-wrap gap-3">
-                {popularCities.slice(0, 12).map((city, i) => (
-                  <span key={i} className="px-5 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-sm font-medium hover:bg-[#31468e] hover:text-white transition-colors cursor-default border border-slate-700">
+                {popularCities.slice(0, 18).map((city, i) => (
+                  <span
+                    key={i}
+                    className="px-5 py-3 bg-slate-800/50 text-slate-100 rounded-none sm:rounded-xl text-sm font-black hover:bg-[#31468e] transition-all cursor-default border border-slate-700/50 shadow-sm"
+                  >
                     {city}
                   </span>
                 ))}
               </div>
             </div>
-            
-            <div className="bg-[#31468e] border border-blue-400/20 rounded-[2.5rem] p-10 shadow-2xl shadow-[#31468e]/50 relative overflow-hidden">
-              <div className="absolute -right-10 -bottom-10 opacity-10">
-                <Compass className="w-64 h-64" />
+
+            <div className="bg-[#31468e] border border-white/10 rounded-none sm:rounded-[3rem] p-10 md:p-14 shadow-2xl relative overflow-hidden flex flex-col justify-center">
+              <div className="absolute -right-16 -bottom-16 opacity-10 pointer-events-none">
+                <Compass className="w-80 h-80" />
               </div>
-              <h3 className="text-3xl font-black mb-4 relative z-10 text-white">{t('pages.innerPages.destinations.coverage.custom.title')}</h3>
-              <p className="text-blue-100 mb-8 relative z-10 leading-relaxed text-lg">
-                {t('pages.innerPages.destinations.coverage.custom.desc')}
+              <h3 className="text-3xl md:text-4xl font-black mb-6 relative z-10 text-white tracking-tight leading-tight">
+                Need a Custom <br /> Itinerary?
+              </h3>
+              <p className="text-lg text-blue-100 mb-10 relative z-10 font-medium leading-relaxed">
+                Planning a multi-state tour spanning 15 days? Or a corporate offsite for 200 employees? Our logistics experts design custom routing charts tailored perfectly to your requirements.
               </p>
-              <button className="relative z-10 px-8 py-4 bg-white text-[#31468e] rounded-xl font-bold hover:bg-[#f2ca1c] hover:text-slate-900 transition-colors shadow-lg">
-                {t('pages.innerPages.destinations.coverage.custom.btn')}
-              </button>
+              <Link
+                to="/contact"
+                className="relative z-10 self-start w-full sm:w-auto px-10 py-4 bg-white text-[#31468e] rounded-none sm:rounded-2xl font-black hover:bg-[#f2ca1c] hover:text-slate-900 transition-all shadow-2xl text-lg text-center"
+              >
+                Talk to a Travel Expert
+              </Link>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 4. Final CTA */}
+      <section className="py-[50px] md:py-32 bg-white overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-[15px] sm:px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-slate-900 rounded-none sm:rounded-[3rem] p-8 sm:p-12 md:p-20 text-center relative overflow-hidden shadow-2xl shadow-slate-900/40"
+          >
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[#31468e]/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-white mb-8 relative z-10 leading-tight tracking-tight">
+              Ready to Plan Your <br /> <span className="text-[#f2ca1c]">Dream Vacation?</span>
+            </h2>
+            <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto relative z-10 font-medium">
+              Tell us your destination and let our experts handle the rest. From luxury fleets to curated itineraries, we ensure every mile is perfect.
+            </p>
+            <div className="flex flex-wrap justify-center gap-6 relative z-10">
+              <Link
+                to="/contact"
+                className="w-full sm:w-auto px-10 py-5 bg-[#31468e] text-white rounded-none sm:rounded-2xl font-black hover:bg-[#f2ca1c] hover:text-slate-900 transition-all shadow-xl shadow-[#31468e]/20 text-center"
+              >
+                Get a Free Quote
+              </Link>
+              <Link
+                to="/"
+                className="w-full sm:w-auto px-10 py-5 bg-white/10 text-white border border-white/20 backdrop-blur-md rounded-none sm:rounded-2xl font-black hover:bg-white/20 transition-all text-center"
+              >
+                Book a Fast Cab
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
 

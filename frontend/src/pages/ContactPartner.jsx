@@ -1,35 +1,32 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { Phone, Mail, MapPin, Send, MessageCircle, Clock } from "lucide-react";
 
 const ContactPartner = () => {
-  const { t } = useTranslation();
-
   const contactInfo = [
     {
-      title: t('pages.landing.contactPartner.info.callUs.title'),
+      title: "Call Us",
       value: "+91 98765 43210",
-      description: t('pages.landing.contactPartner.info.callUs.desc'),
+      description: "Available for urgent inquiries",
       icon: Phone,
     },
     {
-      title: t('pages.landing.contactPartner.info.emailUs.title'),
+      title: "Email Us",
       value: "partners@ghoomway.com",
-      description: t('pages.landing.contactPartner.info.emailUs.desc'),
+      description: "Quick response within 24 hours",
       icon: Mail,
     },
     {
-      title: t('pages.landing.contactPartner.info.visitUs.title'),
-      value: t('pages.landing.contactPartner.info.visitUs.address'),
-      description: t('pages.landing.contactPartner.info.visitUs.desc'),
+      title: "Visit Us",
+      value: "123 Travel Hub, Sector 45, Gurugram, India",
+      description: "Monday - Friday, 10 AM - 6 PM",
       icon: MapPin,
     },
   ];
 
   return (
-    <section id="contact" className="py-12 md:py-24 bg-white overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-[15px] md:px-6">
+    <section id="contact" className="py-[50px] md:py-24 bg-white overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto px-[15px] sm:px-6">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-20 items-start">
           {/* Contact Details Side */}
           <div className="lg:w-1/2 text-left">
@@ -40,13 +37,13 @@ const ContactPartner = () => {
               transition={{ duration: 0.8 }}
             >
               <span className="text-indigo-600 font-bold tracking-widest uppercase text-[11px] mb-3 block">
-                {t('pages.landing.contactPartner.badge')}
+                Get In Touch
               </span>
               <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-[1.1] mb-6 tracking-tight">
-                {t('pages.landing.contactPartner.heading')}
+                Let's Start a Conversation
               </h2>
               <p className="text-base text-slate-600 mb-10 leading-relaxed max-w-md">
-                {t('pages.landing.contactPartner.subtext')}
+                Looking to partner or have questions? Our team is here to help. Reach out through any channel.
               </p>
             </motion.div>
 
@@ -80,58 +77,58 @@ const ContactPartner = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="lg:w-1/2 w-[calc(100%+30px)] -mx-[15px] md:mx-0 md:w-full"
+            className="lg:w-1/2 w-full"
           >
-            <div className="bg-slate-900 rounded-none md:rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
+            <div className="bg-slate-900 rounded-none sm:rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
               
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-8 h-8 rounded-full bg-indigo-600/20 flex items-center justify-center">
                   <MessageCircle className="text-indigo-400" size={16} />
                 </div>
-                <h3 className="text-xl font-bold text-white">{t('pages.landing.contactPartner.formTitle')}</h3>
+                <h3 className="text-xl font-bold text-white">Direct Message</h3>
               </div>
               
               <form className="space-y-5 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">{t('pages.landing.contactPartner.nameLabel')}</label>
+                    <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">Name</label>
                     <input
                       type="text"
                       className="w-full bg-slate-800/40 border border-slate-700/40 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all text-sm placeholder:text-slate-600"
-                      placeholder={t('pages.landing.contactPartner.namePlaceholder')}
+                      placeholder="Your name"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">{t('pages.landing.contactPartner.emailLabel')}</label>
+                    <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">Email</label>
                     <input
                       type="email"
                       className="w-full bg-slate-800/40 border border-slate-700/40 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all text-sm placeholder:text-slate-600"
-                      placeholder={t('pages.landing.contactPartner.emailPlaceholder')}
+                      placeholder="your@email.com"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">{t('pages.landing.contactPartner.subjectLabel')}</label>
+                  <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">Subject</label>
                   <input
                     type="text"
                     className="w-full bg-slate-800/40 border border-slate-700/40 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all text-sm placeholder:text-slate-600"
-                    placeholder={t('pages.landing.contactPartner.subjectPlaceholder')}
+                    placeholder="Subject..."
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">{t('pages.landing.contactPartner.messageLabel')}</label>
+                  <label className="block text-slate-500 text-[10px] font-black uppercase tracking-widest ml-1">Message</label>
                   <textarea
                     rows="3"
                     className="w-full bg-slate-800/40 border border-slate-700/40 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all resize-none text-sm leading-relaxed placeholder:text-slate-600"
-                    placeholder={t('pages.landing.contactPartner.messagePlaceholder')}
+                    placeholder="Tell us more..."
                   ></textarea>
                 </div>
                 <button
                   type="submit"
                   className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-xl transition-all flex items-center justify-center gap-2 group text-base tracking-tight shadow-lg shadow-indigo-900/20"
                 >
-                  {t('pages.landing.contactPartner.sendBtn')} <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  Send Message <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </button>
               </form>
             </div>
@@ -144,18 +141,16 @@ const ContactPartner = () => {
            whileInView={{ opacity: 1, y: 0 }}
            viewport={{ once: true }}
            transition={{ duration: 0.8, delay: 0.4 }}
-           className="mt-12 p-6 md:p-8 rounded-[2rem] bg-indigo-50 border border-indigo-100 flex flex-col md:flex-row items-center gap-6 w-full"
+           className="mt-12 p-6 md:p-8 rounded-none sm:rounded-[2rem] bg-indigo-50 border border-indigo-100 flex flex-col md:flex-row items-center gap-6 w-full"
         >
           <div className="bg-indigo-600 p-4 rounded-2xl shadow-lg shadow-indigo-200 shrink-0">
             <Clock className="text-white" size={28} />
           </div>
           <div className="text-center md:text-left">
-            <h4 className="font-black text-slate-900 text-lg mb-1 uppercase tracking-tight">{t('pages.landing.contactPartner.supportHours')}</h4>
-            <div className="text-slate-600 text-sm md:text-base leading-relaxed" 
-              dangerouslySetInnerHTML={{ __html: t('pages.landing.contactPartner.supportLine')
-                .replace("Monday through Friday, 10:00 AM to 8:00 PM IST", `<span class="font-bold text-indigo-600">Monday through Friday, 10:00 AM to 8:00 PM IST</span>`) 
-              }} 
-            />
+            <h4 className="font-black text-slate-900 text-lg mb-1 uppercase tracking-tight">Official Support Hours</h4>
+            <div className="text-slate-600 text-sm md:text-base leading-relaxed">
+              Our dedicated partner support team is available <span className="font-bold text-indigo-600">Monday through Friday, 10:00 AM to 8:00 PM IST</span>. For urgent matters outside these hours, please use the contact number provided above.
+            </div>
           </div>
         </motion.div>
       </div>

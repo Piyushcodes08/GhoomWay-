@@ -19,6 +19,19 @@ body{
   padding-left: 15px;
   padding-right: 15px;
 }
+   .custom-pagination .swiper-pagination-bullet {
+          width: 24px;
+          height: 4px;
+          background: #31468e;
+          border-radius: 4px;
+          opacity: 0.2;
+          transition: all 0.3s;
+        }
+        .custom-pagination .swiper-pagination-bullet-active {
+          width: 48px;
+          opacity: 1;
+          background: #31468e;
+        }
 
 @media (min-width: 768px) {
   .responsive-container {

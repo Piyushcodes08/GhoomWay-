@@ -1,107 +1,87 @@
 import { motion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { Phone, Award, Star, Calendar } from "lucide-react";
 
 const features = [
-  { icon: Phone, title: "24/7 Customer Support", key: "24/7customersupport" },
-  { icon: Award, title: "Earn Exclusive Rewards", key: "earnexclusiverewards" },
-  { icon: Star, title: "Trusted by Millions", key: "trustedbymillions" },
-  { icon: Calendar, title: "Flexible Booking Options", key: "flexiblebookingoptions" },
+  { 
+    icon: Phone, 
+    title: "24/7 Customer Support", 
+    description: "Our dedicated team is available around the clock to assist you with bookings, changes, or any queries you may have during your journey." 
+  },
+  { 
+    icon: Award, 
+    title: "Earn Exclusive Rewards", 
+    description: "Join our loyalty program and earn points on every booking. Redeem them for discounts, upgrades, and special travel offers." 
+  },
+  { 
+    icon: Star, 
+    title: "Trusted by Millions", 
+    description: "With a decade of excellence, we've served millions of happy travelers across India, maintaining the highest safety and quality standards." 
+  },
+  { 
+    icon: Calendar, 
+    title: "Flexible Booking Options", 
+    description: "Change or cancel your plans with ease. We offer various booking types including round trips, one-way, and local rentals to suit your needs." 
+  },
 ];
 
 const Features = () => {
-  const { t } = useTranslation();
-
   return (
-    <section className="relative overflow-hidden bg-[#f8f9fc] py-12 md:py-24">
-      {/* Premium Background Layers */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-[-120px] top-10 h-[320px] w-[320px] rounded-full bg-[#31468e]/15 blur-3xl" />
-        <div className="absolute right-[-100px] top-24 h-[300px] w-[300px] rounded-full bg-[#f2ca1c]/20 blur-3xl" />
-        <div className="absolute bottom-[-100px] left-1/2 h-[260px] w-[260px] -translate-x-1/2 rounded-full bg-[#31468e]/10 blur-3xl" />
-
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.9),transparent_55%)]" />
-        <div className="absolute inset-0 opacity-[0.04] [background-image:linear-gradient(to_right,#31468e_1px,transparent_1px),linear-gradient(to_bottom,#31468e_1px,transparent_1px)] [background-size:60px_60px]" />
-      </div>
-
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="features" className="py-[50px] md:py-24 bg-white overflow-hidden">
+      <div className="relative mx-auto max-w-7xl px-[15px] sm:px-8">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8 }}
-          className="mx-auto mb-16 max-w-4xl text-center"
+           initial={{ opacity: 0, y: 30 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           transition={{ duration: 0.8 }}
+           className="text-center mb-16 md:mb-24"
         >
-          <div className="mb-5 inline-flex items-center rounded-full border border-[#31468e]/10 bg-white/80 px-5 py-2 text-sm font-medium text-[#31468e] shadow-[0_8px_30px_rgba(49,70,142,0.08)] backdrop-blur-md">
-            {t('pages.landing.features.badge')}
+          <div className="inline-block px-4 py-1.5 rounded-full bg-slate-50 border border-slate-100 text-[#31468e] text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
+            Premium Travel Experience
           </div>
-
-          <h2 className="text-4xl font-bold leading-tight text-[#31468e] sm:text-5xl lg:text-6xl">
-            {t('pages.landing.features.heading').split('GhoomWay')[0]}{" "}
+          
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-slate-900 leading-tight">
+            Why travelers choose <br />
             <span className="relative inline-block text-[#f2ca1c]">
               GhoomWay
-              <span className="absolute -bottom-1 left-0 h-[4px] w-full rounded-full bg-[#f2ca1c]/30" />
+              <span className="absolute bottom-2 left-0 w-full h-1.5 bg-[#f2ca1c]/30 rounded-full" />
             </span>
           </h2>
-
-          <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-slate-600 sm:text-base">
-            {t('pages.landing.features.subtext')}
+          
+          <p className="max-w-3xl mx-auto mt-8 text-slate-500 font-medium text-sm md:text-base leading-relaxed italic">
+            "Designed with elegance, reliability, and trust at its core, GhoomWay delivers a premium booking experience for every traveler."
           </p>
         </motion.div>
 
-        {/* Features Grid */}
-        <div className="group relative">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {features.map((item, index) => {
-              const Icon = item.icon;
-              return (
-                <div
+        {/* Features Content (Matches the screenshot feeling) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12">
+          {features.map((item, index) => {
+             const Icon = item.icon;
+             return (
+               <motion.div
                   key={index}
-                  className="relative min-h-[280px] rounded-[30px] border border-slate-200 bg-white p-8 shadow-sm transition-transform duration-300 hover:-translate-y-2"
-                >
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#31468e] text-white">
-                    <Icon className="h-7 w-7" />
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="group"
+               >
+                  <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center mb-6 group-hover:bg-[#31468e] transition-colors duration-500 border border-slate-100 shadow-sm rounded-none sm:rounded-2xl">
+                    <Icon className="w-8 h-8 text-[#31468e] group-hover:text-white transition-colors duration-500" />
                   </div>
-
-                  <h3 className="mb-4 text-2xl font-semibold tracking-tight text-[#31468e]">
-                    {t(`pages.landing.features.items.${item.key}.title`, item.title)}
+                  <h3 className="text-xl font-bold text-slate-900 mb-4 tracking-tight">
+                    {item.title}
                   </h3>
-
-                  <p className="text-[15px] leading-7 text-slate-600">
-                    {t(`pages.landing.features.items.${item.key}.description`)}
+                  <p className="text-sm text-slate-500 leading-relaxed font-medium">
+                    {item.description}
                   </p>
-                </div>
-              );
-            })}
-          </div>
+               </motion.div>
+             );
+          })}
         </div>
-
-        {/* Bottom trust strip */}
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.15 }}
-          className="mt-16 flex flex-col items-center justify-center gap-4 text-center"
-        >
-          <div className="flex items-center gap-4 text-sm text-slate-500">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#31468e]/20 md:w-28" />
-            <span>
-              {t('pages.landing.features.trustLine')}
-            </span>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#31468e]/20 md:w-28" />
-          </div>
-        </motion.div>
       </div>
-
-      <style>{`
-        .group:hover .group-hover\\:pause {
-          animation-play-state: paused;
-        }
-      `}</style>
     </section>
   );
 };
 
-export default Features;
+export default Features;

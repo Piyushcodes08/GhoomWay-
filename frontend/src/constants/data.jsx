@@ -38,38 +38,40 @@ export const navLinks = ["about", "destinations", "services", "contact"];
 // 2. Destinations Data
 // ==========================
 export const destinationsData = [
-  { id: 1, name: "Jaisalmer", location: "Rajasthan", rating: 4.9, image: img1, price: "₹4,500" },
-  { id: 2, name: "Golden Temple", location: "Amritsar", rating: 5.0, image: img2, price: "₹3,200" },
-  { id: 3, name: "abu road", location: "rajasthan", rating: 4.8, image: img3, price: "₹3,800" },
-  { id: 4, name: "golden Goa", location: "Goa", rating: 4.7, image: img4, price: "₹8,500" },
-  { id: 5, name: "dwarka", location: "somnath temple", rating: 4.9, image: img1, price: "₹4,000" },
+  { id: 1, name: "Jaisalmer", location: "Rajasthan", rating: 4.9, image: img1, price: "₹4,500", tag: "Royal Heritage" },
+  { id: 2, name: "Golden Temple", location: "Amritsar", rating: 5.0, image: img2, price: "₹3,200", tag: "Spiritual Hub" },
+  { id: 3, name: "Mount Abu", location: "Rajasthan", rating: 4.8, image: img3, price: "₹3,800", tag: "Hill Station" },
+  { id: 4, name: "Sunny Goa", location: "Goa", rating: 4.7, image: img4, price: "₹8,500", tag: "Beach Paradise" },
+  { id: 5, name: "Dwarka", location: "Gujarat", rating: 4.9, image: img1, price: "₹4,000", tag: "Divine Coast" },
+  { id: 6, name: "Udaipur", location: "Rajasthan", rating: 4.9, image: img2, price: "₹4,200", tag: "City of Lakes" },
 ];
 
 // ==========================
 // 3. About Section Data
 // ==========================
 export const aboutStats = [
-  { label: "Years of Excellence", value: "10+", icon: Award },
-  { label: "Happy Travelers", value: "50k+", icon: Users },
-  { label: "Destinations Covered", value: "100+", icon: Globe },
+  { label: "Years of Excellence", value: "12+", icon: Award },
+  { label: "Happy Travelers", value: "75k+", icon: Users },
+  { label: "Destinations Covered", value: "150+", icon: Globe },
   { label: "Safety Verified", value: "100%", icon: ShieldCheck },
 ];
 
 export const aboutValues = [
-  { title: "Premium Comfort", description: "We provide the most luxurious and comfortable travel experience tailored to your needs." },
-  { title: "Reliability", description: "Our fleet and drivers are punctual and professionally trained for your peace of mind." },
+  { title: "Premium Comfort", description: "Experience luxury with our meticulously maintained fleet, featuring plush interiors and climate control for a relaxing journey." },
+  { title: "Elite Reliability", description: "Our chauffeurs are vetted for safety and punctuality, ensuring you reach your destination on time, ogni volta." },
+  { title: "24/7 Concierge", description: "Dedicated support team available around the clock to handle your booking needs and real-time adjustments." },
 ];
 
 // ==========================
 // 4. Services Data
 // ==========================
 export const servicesData = [
-  { title: "City Rides", image: img1, icon: Car, buttonColor: "hover:bg-[#31468e]" },
-  { title: "Airport Transfers", image: img2, icon: Plane, buttonColor: "hover:bg-sky-500" },
-  { title: "Outstation Trips", image: img3, icon: Map, buttonColor: "hover:bg-emerald-500" },
-  { title: "Corporate Travel", image: img3, icon: Briefcase, buttonColor: "hover:bg-slate-700" },
-  { title: "Luxury Rentals", image: img4, icon: Sparkles, buttonColor: "hover:bg-amber-500" },
-  { title: "Heritage Tours", image: img1, icon: ShieldCheck, buttonColor: "hover:bg-rose-500" },
+  { title: "Premium City Rides", image: img1, icon: Car, description: "Door-to-door luxury within the city." },
+  { title: "Elite Airport Transfers", image: img2, icon: Plane, description: "Punctual pickups with meet-and-greet." },
+  { title: "Intercity Expeditions", image: img3, icon: Map, description: "Comfortable long-distance journeys." },
+  { title: "Corporate Mobility", image: img3, icon: Briefcase, description: "Specialized fleet for business needs." },
+  { title: "Luxury Wedding Rentals", image: img4, icon: Sparkles, description: "Make your special day more elegant." },
+  { title: "Elite Heritage Tours", image: img1, icon: ShieldCheck, description: "Curated cultural experiences." },
 ];
 
 // ==========================

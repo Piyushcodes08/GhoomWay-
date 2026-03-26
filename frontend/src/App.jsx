@@ -1,5 +1,5 @@
-import { Routes, Route } from "react-router-dom";
-import { lazy } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import "./index.css";
 import Layout from "./components/layout/Layout";
 import LandingPage from "./pages/LandingPage";
@@ -17,21 +17,23 @@ const App = () => {
   return (
     <>
       <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<LandingPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="services" element={<ServicesPage />} />
-          <Route path="destinations" element={<DestinationsPage />} />
-          <Route path="contact" element={<ContactPage />} />
-        </Route>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-[#31468e] border-t-transparent rounded-full animate-spin"></div></div>}>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<LandingPage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="services" element={<ServicesPage />} />
+            <Route path="destinations" element={<DestinationsPage />} />
+            <Route path="contact" element={<ContactPage />} />
+          </Route>
 
-        <Route path="/admin/login" element={<LoginPage />} />
-        
-        <Route element={<ProtectedRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        </Route>
-      </Routes>
+          <Route path="/admin/login" element={<LoginPage />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </>
   );
 };

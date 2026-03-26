@@ -8,7 +8,6 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "./index.css";
-import "./i18n/config";
 import App from "./App.jsx";
 
 createRoot(document.getElementById("root")).render(

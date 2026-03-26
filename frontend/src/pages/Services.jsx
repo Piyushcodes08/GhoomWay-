@@ -1,107 +1,87 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { motion } from "framer-motion";
 import { servicesData } from "../constants/data.jsx";
 
-
-export default function Services() {
-  const { t } = useTranslation();
+const Services = () => {
   return (
-    <section
-      id="services"
-      className="relative py-16 md:py-28 bg-[#f8fafc] overflow-hidden"
-    >
-      {/* Performance optimized background - No heavy filters */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] [background-size:20px_20px] opacity-30" />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6">
-        
-        {/* Header: Static for instant LCP (Largest Contentful Paint) */}
-        <div className="text-center mb-16 md:mb-20">
-          <h2 className="text-4xl md:text-6xl font-black text-[#31468e] tracking-tight">
-            {t('pages.landing.services.badge').split(' ')[0]} <span className="text-[#f2ca1c]">{t('pages.landing.services.badge').split(' ')[1]}</span>
+    <section id="services" className="py-[50px] md:py-24 bg-white overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto px-[15px] sm:px-6">
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           transition={{ duration: 0.8 }}
+           className="text-center mb-16"
+        >
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#31468e] leading-tight">
+            Premium <span className="text-[#f2ca1c]">Services</span>
           </h2>
-          <div className="w-20 h-1.5 bg-[#f2ca1c] mx-auto mt-4 rounded-full" />
-          <p className="mt-6 text-slate-600 text-lg max-w-2xl mx-auto font-medium">
-            {t('pages.landing.services.subtext')}
+          <div className="w-20 h-1 bg-[#f2ca1c] mx-auto mt-4 rounded-full" />
+          <p className="max-w-2xl mx-auto mt-6 text-gray-500 font-medium text-sm md:text-base">
+            Experience comfort, safety, and luxury with our wide range of cab services mapped to every travel need.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {servicesData.map((service, index) => {
-             const key = service.title.toLowerCase().replace(/\s+/g, '');
-             const localizedTitle = t(`pages.landing.services.items.${key}.title`, service.title);
-             return (
-              <div
-                key={service.title || index}
-                className="service-card group relative h-[320px] rounded-[2.5rem] overflow-hidden bg-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] transform-gpu hover:-translate-y-3"
+            const Icon = service.icon;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group relative bg-slate-900 border border-white/10 rounded-none sm:rounded-[2.5rem] overflow-hidden aspect-[4/5] sm:aspect-square md:aspect-[3/2] lg:aspect-[4/3] shadow-2xl transition-all duration-700"
               >
-                {/* Image: Optimized with Aspect Ratio & GPU priority */}
-              <img
-                src={service.image}
-                alt={localizedTitle}
-                loading="lazy"
-                decoding="async"
-                width="600"
-                height="640"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 transform-gpu"
-              />
+                {/* Image Background */}
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 opacity-70 group-hover:opacity-50"
+                />
+                
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-transparent to-transparent group-hover:from-[#31468e]/80 transition-all duration-700" />
+                
+                {/* Glow Effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,rgba(242,202,28,0.1)_0%,transparent_70%)] transition-opacity duration-700" />
 
-                {/* Advanced Gradient Overlay (Better than plain black/40) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#31468e]/90 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
-
-                {/* Icon & Title Container */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
-                  <div className="mb-4 transform transition-all duration-500 group-hover:-translate-y-2">
-                    <div className="w-16 h-16 rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl">
-                      <service.icon className="w-8 h-8 text-white" />
-                    </div>
+                {/* Content Overlay */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
+                  <div className={`w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 border border-white/20 transform transition-all duration-700 group-hover:scale-110 group-hover:bg-[#f2ca1c] group-hover:border-[#f2ca1c] shadow-2xl`}>
+                    <Icon className="w-8 h-8 text-[#f2ca1c] group-hover:text-slate-900 transition-colors" />
                   </div>
-                  
-                  <h3 className="text-3xl font-bold text-white tracking-tight">
-                    {localizedTitle}
+                  <h3 className="text-2xl font-black text-white tracking-tight mb-3 group-hover:scale-110 transition-transform duration-500">
+                    {service.title}
                   </h3>
-                  
-                  {/* Description: Revealed on Hover */}
-                  <p className="text-white/80 text-sm mt-2 opacity-0 h-0 group-hover:opacity-100 group-hover:h-auto transition-all duration-500 delay-100">
-                    {t(`pages.landing.services.items.${key}.description`, service.description || "Premium travel experience tailored for you.")}
+                  <div className="w-10 h-1 bg-[#f2ca1c] rounded-full mb-4 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+                  <p className="max-w-[240px] text-slate-200 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0 leading-relaxed">
+                    {service.description}
                   </p>
                 </div>
 
-                {/* Industry Style Button */}
-                <div className="absolute bottom-6 left-0 right-0 px-8 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-150">
-                  <Link to="/services" className="block text-center w-full py-4 bg-white text-[#31468e] font-black rounded-2xl shadow-xl hover:bg-[#f2ca1c] hover:text-[#31468e] transition-colors uppercase tracking-widest text-xs">
-                    {t('pages.landing.services.bookBtn', { service: localizedTitle })}
-                  </Link>
-                </div>
-              </div>
+                {/* Corner Accent */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              </motion.div>
             );
           })}
         </div>
-      </div>
 
-      {/* Global Optimization Styles */}
-      <style dangerouslySetInnerHTML={{ __html: `
-        .service-card {
-          backface-visibility: hidden;
-          perspective: 1000px;
-        }
-        /* Reveal cards one by one on scroll without Framer Motion */
-        @keyframes reveal {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .service-card {
-          animation: reveal 0.8s ease-out both;
-          animation-timeline: view();
-          animation-range: entry 5% cover 20%;
-        }
-        /* Fallback for older browsers */
-        @supports not (animation-timeline: view()) {
-          .service-card { opacity: 1; transform: none; animation: none; }
-        }
-      `}} />
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-16 text-center"
+        >
+          <Link to="/services" className="inline-flex items-center gap-3 px-10 py-4 bg-[#31468e] text-white rounded-none sm:rounded-2xl font-black hover:bg-[#f2ca1c] hover:text-slate-900 transition-all shadow-xl shadow-[#31468e]/20">
+            Explore All Services <span>→</span>
+          </Link>
+        </motion.div>
+      </div>
     </section>
   );
-}
+};
+
+export default Services;

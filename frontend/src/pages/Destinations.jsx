@@ -1,96 +1,134 @@
-import React from "react";
-import { Link } from "react-router-dom";
+
+import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
-import { MapPin, ArrowRight } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { ArrowRight, Star, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 import { destinationsData } from "../constants/data.jsx";
-
 
 import "swiper/css";
 import "swiper/css/pagination";
 
 const Destinations = () => {
-  const { t } = useTranslation();
-
   return (
-    <section id="destinations" className="py-12 md:py-24 bg-slate-50 overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
-        
-        {/* Header - Static for Performance */}
-        <div className="mb-10">
-          <span className="text-[#31468e] font-bold tracking-widest uppercase text-[10px] mb-2 block">
-            {t('pages.landing.destinations.badge')}
-          </span>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900">
-            {t('pages.landing.destinations.headingPrefix')} <span className="text-[#31468e]">{t('pages.landing.destinations.headingSuffix')}</span>
-          </h2>
+    <section id="destinations" className="py-[50px] md:py-24 bg-slate-50 border-t border-slate-200/60 overflow-hidden">
+      <div className="w-full max-w-7xl mx-auto px-[15px] sm:px-6">
+
+        {/* Section Header */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10 md:mb-14">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <span className="text-[#31468e] text-xs font-black uppercase tracking-[0.25em] mb-3 block">
+              ✦ Premium Travel Destinations
+            </span>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 leading-tight">
+              Top <span className="text-[#31468e]">Destinations</span>
+            </h2>
+            <div className="w-16 h-1 bg-[#f2ca1c] mt-4 rounded-full" />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Link
+              to="/destinations"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-slate-900 text-white rounded-none sm:rounded-xl font-black hover:bg-[#31468e] transition-all duration-300 shadow-xl shadow-slate-900/20 text-sm"
+            >
+              View All <span className="text-[#f2ca1c]">→</span>
+            </Link>
+          </motion.div>
         </div>
 
+        {/* Swiper */}
         <Swiper
           modules={[Pagination]}
           spaceBetween={20}
           slidesPerView={1}
-          loop={false}
-          speed={400}
-          pagination={{ clickable: true, dynamicBullets: true }}
+          pagination={{ clickable: true, el: ".dest-pagination" }}
           breakpoints={{
-            640: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
-            1280: { slidesPerView: 4 }
+            640: { slidesPerView: 2, spaceBetween: 20 },
+            1024: { slidesPerView: 3, spaceBetween: 24 },
+            1280: { slidesPerView: 4, spaceBetween: 24 },
           }}
-          className="destinations-swiper !pb-14"
+          className="pb-14"
         >
-          {destinationsData.map((dest, index) => {
-            const key = dest.name.toLowerCase().replace(/\s+/g, '');
-            return (
-              <SwiperSlide key={dest.id || index}>
-                <div className="relative group h-[420px] rounded-[2rem] overflow-hidden bg-slate-200 transform-gpu shadow-sm hover:shadow-xl transition-all duration-500">
+          {destinationsData.map((dest) => (
+            <SwiperSlide key={dest.id}>
+              <motion.div
+                whileHover={{ y: -8 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="relative rounded-none sm:rounded-[2rem] overflow-hidden shadow-xl group border border-slate-100 aspect-[3/4] cursor-pointer"
+              >
+                {/* Image */}
+                <img
+                  src={dest.image}
+                  alt={dest.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+
+                {/* Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/30 to-transparent" />
+
+                {/* Top Badges */}
+                <div className="absolute top-5 left-5 right-5 flex justify-between items-start z-10">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-md border border-white/20">
+                    <Star size={12} className="text-[#f2ca1c] fill-[#f2ca1c]" />
+                    <span className="text-white text-xs font-black">{dest.rating}</span>
+                  </div>
+                  {dest.tag && (
+                    <div className="px-3 py-1.5 rounded-full bg-[#f2ca1c] text-slate-900 text-[10px] font-black uppercase tracking-wider shadow-lg">
+                      {dest.tag}
+                    </div>
+                  )}
+                </div>
+
+                {/* Bottom Content */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 z-10">
+                  <div className="flex items-center gap-1.5 text-[#f2ca1c] mb-2">
+                    <MapPin size={14} />
+                    <span className="text-xs font-black uppercase tracking-[0.15em]">{dest.location}</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-white tracking-tight mb-4">{dest.name}</h3>
                   
-                  {/* Critical Fix: fetchPriority for LCP */}
-                  <img
-                    src={dest.image}
-                    alt={t(`pages.landing.destinations.${key}.name`, dest.name)}
-                    loading="lazy"
-                    decoding="async"
-                    width="500"
-                    height="700"
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-
-                  {/* Overlay - Gradient is faster than Blur/Filters */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
-
-                  <div className="absolute bottom-0 left-0 w-full p-6">
-                    <div className="flex items-center gap-1.5 text-[#f2ca1c] text-[10px] font-bold uppercase mb-2">
-                      <MapPin size={12} /> {t(`pages.landing.destinations.${key}.location`, dest.location)}
+                  <div className="flex items-center justify-between border-t border-white/10 pt-4">
+                    <div>
+                      <p className="text-[9px] uppercase font-black text-white/50 tracking-widest">Starts From</p>
+                      <p className="text-xl font-black text-white">{dest.price}</p>
                     </div>
-                    
-                    <h3 className="text-2xl font-bold text-white mb-4">
-                      {t(`pages.landing.destinations.${key}.name`, dest.name)}
-                    </h3>
-
-                    {/* Price & Button - Won't slow down LCP */}
-                    <div className="flex justify-between items-center pt-4 border-t border-white/10">
-                      <div>
-                        <p className="text-white/60 text-[10px] uppercase tracking-wider">{t('common.startingFrom')}</p>
-                        <p className="text-xl font-bold text-[#f2ca1c]">{dest.price}</p>
-                      </div>
-                      <Link to="/destinations" className="bg-[#f2ca1c] text-[#31468e] p-3 rounded-full hover:bg-white transition-all transform hover:scale-110 active:scale-90 shadow-lg block">
-                        <ArrowRight size={20} />
-                      </Link>
-                    </div>
+                    <Link
+                      to="/destinations"
+                      className="w-11 h-11 rounded-xl bg-[#f2ca1c] flex items-center justify-center text-slate-900 hover:bg-white hover:scale-110 transition-all duration-300 shadow-lg shadow-[#f2ca1c]/30"
+                    >
+                      <ArrowRight size={20} strokeWidth={3} />
+                    </Link>
                   </div>
                 </div>
-              </SwiperSlide>
-            );
-          })}
+              </motion.div>
+            </SwiperSlide>
+          ))}
         </Swiper>
+
+        {/* Pagination dots */}
+        <div className="dest-pagination flex justify-center items-center gap-2 mt-2" />
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        .destinations-swiper .swiper-pagination-bullet-active { background: #31468e !important; width: 26px !important; border-radius: 10px !important; }
-      `}} />
+      <style>{`
+        .dest-pagination .swiper-pagination-bullet {
+          width: 24px; height: 4px;
+          background: #31468e; border-radius: 4px;
+          opacity: 0.2; transition: all 0.3s; margin: 0 !important;
+        }
+        .dest-pagination .swiper-pagination-bullet-active {
+          width: 48px; opacity: 1;
+        }
+      `}</style>
     </section>
   );
 };

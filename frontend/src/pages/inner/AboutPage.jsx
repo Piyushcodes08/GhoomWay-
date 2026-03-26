@@ -19,7 +19,7 @@ export default function AboutPage() {
           fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-transparent" />
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 mt-20">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-[15px] mt-20">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -41,7 +41,7 @@ export default function AboutPage() {
       </section>
 
       {/* 2. The Brand Story */}
-      <section className="py-24 md:py-32 px-4 md:px-6 max-w-7xl mx-auto">
+      <section className="py-[50px] md:py-32 px-[15px] md:px-6 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-12 gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -50,8 +50,8 @@ export default function AboutPage() {
             className="lg:col-span-5 relative"
           >
             <div className="grid grid-cols-2 gap-4">
-              <img src={img1} alt="Travel" className="w-full h-64 object-cover rounded-3xl rounded-tr-none shadow-xl" />
-              <img src={img2} alt="Comfort" className="w-full h-64 object-cover rounded-3xl rounded-tl-none shadow-xl mt-8" />
+              <img src={img1} alt="Travel" className="w-full h-64 object-cover rounded-none sm:rounded-3xl sm:rounded-tr-none shadow-xl" />
+              <img src={img2} alt="Comfort" className="w-full h-64 object-cover rounded-none sm:rounded-3xl sm:rounded-tl-none shadow-xl mt-8" />
             </div>
             {/* Experience Badge */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-2xl">
@@ -103,17 +103,17 @@ export default function AboutPage() {
       </section>
 
       {/* 3. Mission & Vision */}
-      <section className="py-24 bg-[#31468e] text-white relative overflow-hidden">
+      <section className="py-[50px] md:py-24 bg-[#31468e] text-white relative overflow-hidden">
         {/* Background abstract design */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-white/5 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3" />
         
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="max-w-7xl mx-auto px-[15px] relative z-10">
           <div className="grid md:grid-cols-2 gap-16">
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-white/10 backdrop-blur-lg border border-white/20 p-12 rounded-[2.5rem]"
+              className="bg-white/10 backdrop-blur-lg border border-white/20 p-6 sm:p-12 rounded-none sm:rounded-[2rem]"
             >
               <div className="w-16 h-16 rounded-2xl bg-[#f2ca1c] flex items-center justify-center mb-8 shadow-lg shadow-[#f2ca1c]/30">
                 <Target className="w-8 h-8 text-[#31468e]" />
@@ -129,7 +129,7 @@ export default function AboutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: 0.2 }}
-              className="bg-white/10 backdrop-blur-lg border border-white/20 p-12 rounded-[2.5rem]"
+              className="bg-white/10 backdrop-blur-lg border border-white/20 p-6 sm:p-12 rounded-none sm:rounded-[2rem] "
             >
               <div className="w-16 h-16 rounded-2xl bg-[#f2ca1c] flex items-center justify-center mb-8 shadow-lg shadow-[#f2ca1c]/30">
                 <Eye className="w-8 h-8 text-[#31468e]" />
@@ -144,7 +144,7 @@ export default function AboutPage() {
       </section>
 
       {/* 4. Core Values / Trust Building */}
-      <section className="py-24 md:py-32 bg-white">
+      <section className="py-[50px] md:py-32 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-3xl mx-auto mb-20">
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Why Travelers <span className="text-[#31468e]">Trust Us</span></h2>
@@ -164,7 +164,7 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+                className="bg-slate-50 p-6 sm:p-8 rounded-none sm:rounded-[2rem] border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
               >
                 <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center mb-6">
                   <feature.icon className="w-7 h-7 text-[#31468e]" />
@@ -178,7 +178,7 @@ export default function AboutPage() {
       </section>
 
       {/* 5. Mock Leadership / Team (Corporate Element) */}
-      <section className="py-24 bg-slate-900 text-white">
+      <section className="py-[50px] md:py-24 bg-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
             <div className="max-w-2xl">
@@ -189,7 +189,7 @@ export default function AboutPage() {
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Founder 1 */}
-            <div className="group relative rounded-[2rem] overflow-hidden">
+            <div className="group relative rounded-none sm:rounded-[2rem] overflow-hidden">
               <img src={img3} alt="CEO" className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                 <h4 className="text-2xl font-bold mb-1">Aman Sharma</h4>
@@ -198,7 +198,7 @@ export default function AboutPage() {
               </div>
             </div>
             {/* Executive 2 */}
-            <div className="group relative rounded-[2rem] overflow-hidden">
+            <div className="group relative rounded-none sm:rounded-[2rem] overflow-hidden">
               <img src={img4} alt="COO" className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                 <h4 className="text-2xl font-bold mb-1">Divya Kapoor</h4>
@@ -207,7 +207,7 @@ export default function AboutPage() {
               </div>
             </div>
             {/* Executive 3 */}
-            <div className="group relative rounded-[2rem] overflow-hidden sm:hidden lg:block">
+            <div className="group relative rounded-none sm:rounded-[2rem] overflow-hidden sm:hidden lg:block">
               <img src={img1} alt="CTO" className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900 flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                 <h4 className="text-2xl font-bold mb-1">Rajiv Mehta</h4>
@@ -220,9 +220,9 @@ export default function AboutPage() {
       </section>
 
       {/* 6. Digital Future / App Coming Soon */}
-      <section className="py-20 bg-slate-50 border-y border-slate-200 overflow-hidden relative">
+      <section className="py-[50px] bg-slate-50 border-y border-slate-200 overflow-hidden relative">
          <div className="absolute top-1/2 right-10 -translate-y-1/2 w-[600px] h-[600px] bg-[#31468e]/5 rounded-full blur-[80px]" />
-         <div className="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+         <div className="max-w-7xl mx-auto px-[15px] relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
                <div className="w-14 h-14 bg-[#31468e] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-[#31468e]/30">
                   <Smartphone className="w-7 h-7 text-[#f2ca1c]" />
@@ -236,9 +236,9 @@ export default function AboutPage() {
                </div>
             </div>
             
-            <div className="relative aspect-square md:aspect-[4/3] w-full rounded-[3rem] bg-gradient-to-br from-[#31468e] to-slate-900 p-8 shadow-2xl flex items-center justify-center overflow-hidden">
+            <div className="relative aspect-square md:aspect-[4/3] w-full rounded-none sm:rounded-[3rem] bg-gradient-to-br from-[#31468e] to-slate-900 p-8 shadow-2xl flex items-center justify-center overflow-hidden">
                {/* Mockup visual */}
-               <div className="w-64 h-[500px] bg-slate-900 rounded-[2.5rem] border-8 border-slate-800 shadow-2xl relative translate-y-12 shrink-0 flex flex-col items-center pt-8 overflow-hidden z-10">
+               <div className="w-64 h-[500px] bg-slate-900 rounded-none sm:rounded-[2.5rem] border-8 border-slate-800 shadow-2xl relative translate-y-12 shrink-0 flex flex-col items-center pt-8 overflow-hidden z-10">
                   <div className="w-20 h-1.5 bg-slate-700 rounded-full mb-8" />
                   <div className="w-16 h-16 bg-[#f2ca1c] shadow-[0_0_30px_rgba(242,202,28,0.5)] rounded-2xl mb-6 border border-white/20" />
                   <div className="text-xl font-black text-white mb-2 tracking-tight">GhoomWay</div>
@@ -250,13 +250,13 @@ export default function AboutPage() {
       </section>
 
       {/* 7. Call to Action */}
-      <section className="py-24 bg-white">
-        <div className="max-w-5xl mx-auto px-6 text-center">
+      <section className="py-[50px] md:py-24 bg-white">
+        <div className="max-w-5xl mx-auto px-[15px] text-center">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="bg-slate-50 p-12 md:p-20 rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50"
+            className="bg-slate-50 p-8 md:p-20 rounded-none sm:rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50"
           >
             <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Ready to Experience the <span className="text-[#31468e]">Difference?</span></h2>
             <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">Book your next trip with Ghoomway and discover why thousands of travelers refuse to ride with anyone else.</p>
