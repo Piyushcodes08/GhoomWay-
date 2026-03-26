@@ -2,6 +2,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, Suspense, lazy } from "react";
 import { Link } from "react-router-dom";
 import heroBg from "/bg-hero.webp";
+import { homeHeroData } from "../constants/data.jsx";
 
 
 // Performance Optimization: CabBooking ko lazy load karein taaki 
@@ -40,16 +41,16 @@ const Home = () => {
         <div className="relative z-10 mx-auto w-full max-w-7xl px-[15px] sm:px-8 ">
           <div className="max-w-xl md:max-w-2xl lg:max-w-3xl">
             <span className="inline-block px-4 py-1.5 mb-8 text-xs font-black tracking-[0.3em] text-[#f2ca1c] uppercase bg-white/5 backdrop-blur-md rounded-full border border-white/10 shadow-2xl">
-              India's Premier Mobility Partner
+              {homeHeroData.badge}
             </span>
 
             <h1 
               className="mb-8 text-4xl font-black text-white sm:text-5xl md:text-6xl lg:text-[5rem]"
-              dangerouslySetInnerHTML={{ __html: "Your Journey, <br /> <span class='text-[#f2ca1c]'>Elevated</span> Perfectly." }}
+              dangerouslySetInnerHTML={{ __html: homeHeroData.titleHtml }}
             />
 
             <p className="mb-5 text-base sm:text-lg leading-relaxed text-white/80 md:text-xl font-medium max-w-2xl">
-              Experience the pinnacle of road travel with GhoomWay. Whether it's a cross-country expedition or a swift airport transfer, we deliver unmatched comfort, safety, and elite professionalism.
+              {homeHeroData.description}
             </p>
 
             <div className="flex flex-wrap gap-4 pb-12 sm:pb-18">

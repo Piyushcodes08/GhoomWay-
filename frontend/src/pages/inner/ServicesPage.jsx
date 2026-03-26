@@ -6,6 +6,7 @@ import img3 from "../../assets/img3.webp";
 import img4 from "../../assets/img4.webp";
 import img1 from "../../assets/img1.webp";
 import img2 from "../../assets/img2.webp";
+import { servicesPageHero, outstationServiceFeatures, airportServiceFeatures, corporateMobilityFeatures, fleetList } from "../../constants/data.jsx";
 
 export default function ServicesPage() {
   return (
@@ -28,13 +29,14 @@ export default function ServicesPage() {
             className="max-w-2xl"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 font-bold uppercase tracking-wider text-xs mb-6 backdrop-blur-md">
-              <Building2 className="w-4 h-4 text-[#f2ca1c]" /> B2B & B2C Solutions
+              <servicesPageHero.badgeIcon className="w-4 h-4 text-[#f2ca1c]" /> {servicesPageHero.badge}
             </div>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
-              Bespoke <span className="text-[#f2ca1c]">Mobility</span> Architecture
-            </h1>
+            <h1 
+              className="text-4xl sm:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight"
+              dangerouslySetInnerHTML={{ __html: servicesPageHero.titleHtml }}
+            />
             <p className="text-xl text-slate-300 font-medium leading-relaxed mb-8">
-              Whether you need an airport transfer at 3 AM or a dedicated fleet for an international conference, we engineer the perfect travel solution.
+              {servicesPageHero.description}
             </p>
             <div className="flex gap-4">
               <a href="#services" className="px-8 py-4 bg-[#31468e] text-white rounded-none sm:rounded-xl font-bold shadow-lg hover:bg-[#20316b] transition-all">
@@ -85,11 +87,7 @@ export default function ServicesPage() {
                 Experience the open highway without the fatigue. Our outstation service is designed for cross-state travel, featuring highly trained drivers who navigate complex routes with ease. We offer highly transparent billing for both one-way drops and round-trip excursions.
               </p>
               <ul className="space-y-4">
-                {[
-                  "Clear per-km pricing with no hidden toll adjustments later.",
-                  "Option to retain the cab for local sightseeing at the destination.",
-                  "Drivers trained in highway safety and emergency protocols."
-                ].map((item, i) => (
+                {outstationServiceFeatures.map((item, i) => (
                   <li key={i} className="flex gap-4 p-4 rounded-none sm:rounded-xl bg-slate-50 border border-slate-100 items-start">
                     <CheckCircle2 className="w-6 h-6 text-[#f2ca1c] shrink-0 mt-0.5" />
                     <span className="font-medium text-slate-700">{item}</span>
@@ -111,11 +109,7 @@ export default function ServicesPage() {
                 Never stress about missing a flight again. Our dispatch team tracks your flight status in real-time, adjusting arrival times automatically for delays or early landings. Enjoy a smooth, uninterrupted ride to or from the terminal.
               </p>
               <ul className="space-y-4">
-                {[
-                  "Live flight tracking integration.",
-                  "Complimentary 45-minute wait time for domestic arrivals.",
-                  "Meet-and-greet services available involving placard pickups."
-                ].map((item, i) => (
+                {airportServiceFeatures.map((item, i) => (
                   <li key={i} className="flex gap-4 p-4 rounded-none sm:rounded-xl bg-slate-50 border border-slate-100 items-start">
                     <CheckCircle2 className="w-6 h-6 text-[#31468e] shrink-0 mt-0.5" />
                     <span className="font-medium text-slate-700">{item}</span>
@@ -163,22 +157,12 @@ export default function ServicesPage() {
               We serve as the backbone for over 50+ multinational companies, handling everything from daily employee shuttles to VIP delegation transport.
             </p>
             <div className="grid sm:grid-cols-2 gap-6">
-              <div className="bg-white/5 border border-white/10 rounded-none sm:rounded-2xl p-6 backdrop-blur-md">
-                <h4 className="text-[#f2ca1c] font-bold text-lg mb-2">Centralized Billing</h4>
-                <p className="text-sm text-slate-400">Monthly post-paid accounts with detailed MIS reporting and GST compliance.</p>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-none sm:rounded-2xl p-6 backdrop-blur-md">
-                <h4 className="text-[#f2ca1c] font-bold text-lg mb-2">Dedicated Account</h4>
-                <p className="text-sm text-slate-400">A single point of contact for bulk bookings and instant issue resolution.</p>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-none sm:rounded-2xl p-6 backdrop-blur-md">
-                <h4 className="text-[#f2ca1c] font-bold text-lg mb-2">GPS API</h4>
-                <p className="text-sm text-slate-400">Integrate our live tracking directly into your corporate security dashboard.</p>
-              </div>
-              <div className="bg-white/5 border border-white/10 rounded-none sm:rounded-2xl p-6 backdrop-blur-md">
-                <h4 className="text-[#f2ca1c] font-bold text-lg mb-2">Protocol</h4>
-                <p className="text-sm text-slate-400">Drivers trained specifically in non-disclosure and VIP escort etiquette.</p>
-              </div>
+              {corporateMobilityFeatures.map((item, i) => (
+                <div key={i} className="bg-white/5 border border-white/10 rounded-none sm:rounded-2xl p-6 backdrop-blur-md">
+                  <h4 className="text-[#f2ca1c] font-bold text-lg mb-2">{item.title}</h4>
+                  <p className="text-sm text-slate-400">{item.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -205,11 +189,7 @@ export default function ServicesPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { class: "Sedan", models: "Dzire, Etios, Amaze", img: img3, seats: "4 Passengers", bags: "2 Large Bags", ideal: "Quick City Rides" },
-              { class: "Executive SUV", models: "Innova, Ertiga", img: img4, seats: "6 Passengers", bags: "4 Large Bags", ideal: "Family Trips" },
-              { class: "Premium Luxury", models: "Fortuner, Camry", img: img1, seats: "4-6 Passengers", bags: "3 Large Bags", ideal: "VIP Transport" },
-            ].map((vehicle, i) => (
+            {fleetList.map((vehicle, i) => (
               <motion.div 
                 key={i}
                 initial={{ opacity: 0, y: 20 }}

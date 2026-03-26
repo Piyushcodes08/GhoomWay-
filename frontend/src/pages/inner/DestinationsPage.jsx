@@ -1,46 +1,7 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { MapPin, Clock, ArrowRight, Star, CheckCircle2, Compass, Navigation } from "lucide-react";
-import { popularCities } from "../../constants/data.jsx";
-
-import img1 from "../../assets/img1.webp";
-import img2 from "../../assets/img2.webp";
-import img3 from "../../assets/img3.webp";
-import img4 from "../../assets/img4.webp";
-
-const featuredRoutes = [
-  {
-    id: 1,
-    title: "The Royal Rajasthan Circuit",
-    route: "Jaipur → Jodhpur → Udaipur",
-    duration: "7 Days / 6 Nights",
-    distance: "1,200 km",
-    image: img1,
-    price: "₹24,999",
-    highlights: ["Fort & Palace Tours", "Desert Safari", "Lake Pichola Boating"]
-  },
-  {
-    id: 2,
-    title: "Spiritual North India",
-    route: "Delhi → Haridwar → Rishikesh",
-    duration: "4 Days / 3 Nights",
-    distance: "550 km",
-    image: img2,
-    price: "₹12,499",
-    highlights: ["Ganga Aarti", "Yoga Sessions", "Mountain Viewpoint"]
-  },
-  {
-    id: 3,
-    title: "Konkan Coastal Drive",
-    route: "Mumbai → Alibaug → Goa",
-    duration: "5 Days / 4 Nights",
-    distance: "600 km",
-    image: img4,
-    price: "₹18,999",
-    highlights: ["Beach Hopping", "Seafood Trail", "Fort Aguada Visit"]
-  }
-];
-
+import { popularCities, destinationsPageHero, featuredRoutes } from "../../constants/data.jsx";
 export default function DestinationsPage() {
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -63,13 +24,14 @@ export default function DestinationsPage() {
             className="max-w-2xl"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 text-[#f2ca1c] font-black uppercase tracking-[0.2em] text-[10px] mb-6 backdrop-blur-md">
-              <Navigation className="w-4 h-4" /> Curated Travel Experiences
+              <destinationsPageHero.badgeIcon className="w-4 h-4" /> {destinationsPageHero.badge}
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
-              Journeys <span className="text-[#f2ca1c]">Crafted</span> For the Soul.
-            </h1>
+            <h1 
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 leading-tight tracking-tight"
+              dangerouslySetInnerHTML={{ __html: destinationsPageHero.titleHtml }}
+            />
             <p className="text-xl text-slate-200 font-medium leading-relaxed mb-10 max-w-xl">
-              India is not just a place on a map; it's an experience. We provide the wheels, the expertise, and the safety to help you chart your own course.
+              {destinationsPageHero.description}
             </p>
             <div className="bg-white/10 backdrop-blur-md p-2 rounded-none sm:rounded-2xl flex max-w-lg border border-white/20 shadow-2xl">
               <input

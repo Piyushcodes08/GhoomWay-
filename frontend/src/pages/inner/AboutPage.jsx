@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Users, Globe, Award, ShieldCheck, Target, Eye, Quote, ChevronRight, CheckCircle2, Smartphone } from "lucide-react";
+import { aboutPageHero, trustPillars, leadershipTeam } from "../../constants/data.jsx";
 import heroImg from "../../assets/about img.webp";
 import img1 from "../../assets/img1.webp";
 import img2 from "../../assets/img2.webp";
@@ -27,14 +28,14 @@ export default function AboutPage() {
             className="max-w-3xl"
           >
             <span className="inline-block px-4 py-1.5 mb-6 text-sm font-bold tracking-[0.2em] text-[#f2ca1c] uppercase bg-[#f2ca1c]/10 rounded-full border border-[#f2ca1c]/20 backdrop-blur-sm">
-              Our Journey
+              {aboutPageHero.badge}
             </span>
-            <h1 className="text-5xl md:text-7xl lg:text-[5rem] font-black text-white mb-8 leading-[1.1] tracking-tight">
-              Moving India, <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f2ca1c] to-[#fceb9e]">One Journey</span> At A Time.
-            </h1>
+            <h1 
+              className="text-5xl md:text-7xl lg:text-[5rem] font-black text-white mb-8 leading-[1.1] tracking-tight"
+              dangerouslySetInnerHTML={{ __html: aboutPageHero.titleHtml }}
+            />
             <p className="text-lg md:text-2xl text-slate-300 font-medium leading-relaxed max-w-2xl border-l-4 border-[#31468e] pl-6">
-              We are not just a mobility company; we are your reliable travel partner bringing trust, safety, and uncompromising luxury to the Indian roads.
+              {aboutPageHero.description}
             </p>
           </motion.div>
         </div>
@@ -152,12 +153,7 @@ export default function AboutPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { icon: ShieldCheck, title: "Stringent Vetting", desc: "Every driver undergoes a comprehensive 4-step background check and behavioral training." },
-              { icon: Award, title: "Maintained Fleet", desc: "Our vehicles are serviced every 5,000 kms to ensure zero breakdowns and maximum comfort." },
-              { icon: CheckCircle2, title: "Transparent Billing", desc: "No hidden toll surprises, no surge pricing traps. We bill exactly what we quote." },
-              { icon: Globe, title: "Tech-Driven Safety", desc: "Live GPS tracking, SOS buttons, and a dedicated 24/7 command center monitoring every ride." }
-            ].map((feature, i) => (
+            {trustPillars.map((feature, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -188,33 +184,16 @@ export default function AboutPage() {
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Founder 1 */}
-            <div className="group relative rounded-none sm:rounded-[2rem] overflow-hidden">
-              <img src={img3} alt="CEO" className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                <h4 className="text-2xl font-bold mb-1">Aman Sharma</h4>
-                <p className="text-[#f2ca1c] font-bold text-sm uppercase tracking-widest mb-4">Founder & CEO</p>
-                <p className="text-slate-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">15 years in logistics and premium mobility operations.</p>
+            {leadershipTeam.map((member, i) => (
+              <div key={i} className={`group relative rounded-none sm:rounded-[2rem] overflow-hidden ${i === 2 ? "sm:hidden lg:block" : ""}`}>
+                <img src={member.img} alt={member.title} className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900 flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                  <h4 className="text-2xl font-bold mb-1">{member.name}</h4>
+                  <p className="text-[#f2ca1c] font-bold text-sm uppercase tracking-widest mb-4">{member.title}</p>
+                  <p className="text-slate-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">{member.desc}</p>
+                </div>
               </div>
-            </div>
-            {/* Executive 2 */}
-            <div className="group relative rounded-none sm:rounded-[2rem] overflow-hidden">
-              <img src={img4} alt="COO" className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                <h4 className="text-2xl font-bold mb-1">Divya Kapoor</h4>
-                <p className="text-[#f2ca1c] font-bold text-sm uppercase tracking-widest mb-4">Chief Operations Officer</p>
-                <p className="text-slate-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">Spearheads fleet management and driver standardizations.</p>
-              </div>
-            </div>
-            {/* Executive 3 */}
-            <div className="group relative rounded-none sm:rounded-[2rem] overflow-hidden sm:hidden lg:block">
-              <img src={img1} alt="CTO" className="w-full aspect-[4/5] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900 flex flex-col justify-end p-8 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                <h4 className="text-2xl font-bold mb-1">Rajiv Mehta</h4>
-                <p className="text-[#f2ca1c] font-bold text-sm uppercase tracking-widest mb-4">Head of Technology</p>
-                <p className="text-slate-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">Architects our live tracking and routing algorithms.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

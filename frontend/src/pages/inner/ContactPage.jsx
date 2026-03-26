@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { MapPin, Phone, Mail, Clock, Send, ShieldCheck, Briefcase, TrendingUp, Handshake, Car } from "lucide-react";
-
-
+import { contactPageHero, directContactDetails, partnerOnboardingBenefits } from "../../constants/data.jsx";
 export default function ContactPage() {
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -19,16 +18,15 @@ export default function ContactPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-5xl md:text-7xl font-black text-white mb-6 uppercase tracking-tight"
-          >
-            Get In <span className="text-[#f2ca1c]">Touch</span>
-          </motion.h1>
+            dangerouslySetInnerHTML={{ __html: contactPageHero.titleHtml }}
+          />
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="text-lg text-slate-300 font-medium"
           >
-            Whether you're planning a trip or looking to join our growing fleet, we're here for you.
+            {contactPageHero.description}
           </motion.p>
         </div>
       </section>
@@ -51,37 +49,21 @@ export default function ContactPage() {
               <h2 className="text-3xl font-black mb-8 relative z-10">Contact Details</h2>
               
               <ul className="space-y-8 relative z-10">
-                <li className="flex items-start gap-5">
-                  <div className="w-12 h-12 rounded-none sm:rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
-                    <Phone className="w-5 h-5 text-[#f2ca1c]" />
-                  </div>
-                  <div>
-                    <h4 className="text-slate-300 text-sm font-bold uppercase tracking-widest mb-1">Bookings & Support</h4>
-                    <p className="text-xl font-bold">+91 98765 43210</p>
-                    <p className="text-sm text-slate-300 mt-1">Partner Helpline: +91 99887 76655</p>
-                  </div>
-                </li>
-                
-                <li className="flex items-start gap-5">
-                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
-                    <Mail className="w-5 h-5 text-[#f2ca1c]" />
-                  </div>
-                  <div>
-                    <h4 className="text-slate-300 text-sm font-bold uppercase tracking-widest mb-1">Email Addresses</h4>
-                    <p className="text-lg font-medium">bookings@ghoomway.com</p>
-                    <p className="text-sm text-slate-300 mt-1">partners@ghoomway.com</p>
-                  </div>
-                </li>
-                
-                <li className="flex items-start gap-5">
-                  <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
-                    <MapPin className="w-5 h-5 text-[#f2ca1c]" />
-                  </div>
-                  <div>
-                    <h4 className="text-slate-300 text-sm font-bold uppercase tracking-widest mb-1">Head Office</h4>
-                    <p className="text-lg font-medium leading-relaxed">123 Travel Hub, Sector 45, Gurugram, Haryana, 122003, India</p>
-                  </div>
-                </li>
+                {directContactDetails.map((detail, index) => {
+                  const Icon = detail.icon;
+                  return (
+                    <li key={index} className="flex items-start gap-5">
+                      <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/20">
+                        <Icon className="w-5 h-5 text-[#f2ca1c]" />
+                      </div>
+                      <div>
+                        <h4 className="text-slate-300 text-sm font-bold uppercase tracking-widest mb-1">{detail.title}</h4>
+                        <p className="text-xl font-bold">{detail.primary}</p>
+                        {detail.secondary && <p className="text-sm text-slate-300 mt-1">{detail.secondary}</p>}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
             
@@ -176,13 +158,8 @@ export default function ContactPage() {
               And grow your career.
             </p>
             <div className="space-y-6">
-              {[
-                { title: "Guaranteed High Earnings", desc: "Consistent intercity and corporate bookings straight from our premium clients without middlemen." },
-                { title: "Verified Passengers", desc: "Safety is two-way. Drive for 100% verified corporate executives, tourists, and families." },
-                { title: "Transparent Payouts", desc: "No hidden fees, no delayed clearance. Exact settlements processed securely on a weekly basis." }
-              ].map((benefit, i) => {
-                const Icons = [TrendingUp, ShieldCheck, Handshake];
-                const Icon = Icons[i];
+              {partnerOnboardingBenefits.map((benefit, i) => {
+                const Icon = benefit.icon;
                 return (
                   <div key={i} className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">

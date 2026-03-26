@@ -1,28 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Phone, Mail, MapPin, Send, MessageCircle, Clock } from "lucide-react";
+import { partnerContactInfo, supportHoursData } from "../constants/data.jsx";
 
 const ContactPartner = () => {
-  const contactInfo = [
-    {
-      title: "Call Us",
-      value: "+91 98765 43210",
-      description: "Available for urgent inquiries",
-      icon: Phone,
-    },
-    {
-      title: "Email Us",
-      value: "partners@ghoomway.com",
-      description: "Quick response within 24 hours",
-      icon: Mail,
-    },
-    {
-      title: "Visit Us",
-      value: "123 Travel Hub, Sector 45, Gurugram, India",
-      description: "Monday - Friday, 10 AM - 6 PM",
-      icon: MapPin,
-    },
-  ];
 
   return (
     <section id="contact" className="py-[50px] md:py-24 bg-white overflow-hidden">
@@ -48,7 +29,7 @@ const ContactPartner = () => {
             </motion.div>
 
             <div className="space-y-4">
-              {contactInfo.map((info, index) => (
+              {partnerContactInfo.map((info, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
@@ -147,10 +128,11 @@ const ContactPartner = () => {
             <Clock className="text-white" size={28} />
           </div>
           <div className="text-center md:text-left">
-            <h4 className="font-black text-slate-900 text-lg mb-1 uppercase tracking-tight">Official Support Hours</h4>
-            <div className="text-slate-600 text-sm md:text-base leading-relaxed">
-              Our dedicated partner support team is available <span className="font-bold text-indigo-600">Monday through Friday, 10:00 AM to 8:00 PM IST</span>. For urgent matters outside these hours, please use the contact number provided above.
-            </div>
+            <h4 className="font-black text-slate-900 text-lg mb-1 uppercase tracking-tight">{supportHoursData.title}</h4>
+            <div 
+              className="text-slate-600 text-sm md:text-base leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: supportHoursData.descriptionHtml }}
+            />
           </div>
         </motion.div>
       </div>
