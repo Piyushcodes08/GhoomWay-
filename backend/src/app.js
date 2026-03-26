@@ -15,14 +15,26 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
-  'https://ghoom-way.vercel.app'
-];
+  'https://ghoom-way.vercel.app',
+  process.env.CLIENT_URL, // Dynamic Render/Production URL
+].filter(Boolean); // Remove undefined/null
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow server-to-server / curl requests (no origin header)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    
+    // Check if origin is in the allowed list or is a subdomain of an allowed origin
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (!allowed) return false;
+      return origin === allowed || origin.endsWith(allowed.replace('https://', '.'));
+    });
+
+    if (isAllowed || process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    console.warn(`[CORS] ❌ Blocked origin: ${origin}`);
     callback(new Error(`CORS: origin '${origin}' not allowed`));
   },
   credentials: true,

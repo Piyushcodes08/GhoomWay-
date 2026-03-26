@@ -1,10 +1,12 @@
 const dotenv = require('dotenv');
+const path = require('path');
+
+// 1. Load env vars immediately (Must happen before app/routes load)
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+
 const dns = require('dns');
 const connectDB = require('./config/db');
 const app = require('./app');
-
-// Load env vars - path relative to project root where .env lives
-dotenv.config({ path: require('path').resolve(__dirname, '../.env') });
 
 // Validate required env vars
 const requiredEnv = ['MONGO_URI', 'JWT_SECRET'];
@@ -16,10 +18,17 @@ requiredEnv.forEach(env => {
 });
 
 // Provide defaults for optional/non-critical vars
-process.env.JWT_EXPIRE = process.env.JWT_EXPIRE || '30d';
-process.env.JWT_COOKIE_EXPIRE = process.env.JWT_COOKIE_EXPIRE || '30';
-process.env.PORT = process.env.PORT || 5000;
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
+// 2. Configuration Diagnostics (Safe logging for production debugging)
+console.log('\n--- 🛠️  Environment Diagnostics ---');
+console.log(`📡 Node Env:    ${process.env.NODE_ENV}`);
+console.log(`🔌 Database:    ${process.env.MONGO_URI ? 'SET (Hidden)' : '❌ MISSING'}`);
+console.log(`💬 Twilio SID:  ${process.env.TWILIO_ACCOUNT_SID ? '✅ DETECTED' : '⚠️ MISSING'}`);
+console.log(`🔐 Twilio Auth: ${process.env.TWILIO_AUTH_TOKEN ? '✅ DETECTED' : '⚠️ MISSING'}`);
+console.log(`📞 SMS Number:  ${process.env.TWILIO_SMS_NUMBER ? '✅ DETECTED' : '⚠️ MISSING'}`);
+console.log(`🌐 Client URL:  ${process.env.CLIENT_URL || '❌ NOT SET'}`);
+console.log('----------------------------------\n');
 
 
 // Force IPv4 first for MongoDB SRV resolution
